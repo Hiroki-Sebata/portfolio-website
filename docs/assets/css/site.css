@@ -150,11 +150,25 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 .split > *{min-width:0}
 
 /* ---------- strip ---------- */
-.strip{display:flex;gap:clamp(10px,1.4vw,18px);overflow-x:auto;scroll-snap-type:x proximity;padding-inline:var(--gutter);padding-bottom:14px;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(236,229,217,.25) transparent}
+.strip{
+  display:flex;gap:clamp(10px,1.4vw,18px);overflow-x:auto;
+  /* snap to the START of a card, not its centre: centre-snapping with few wide
+     cards pulls the strip back to where it began, which reads as "it won't move" */
+  scroll-snap-type:x proximity;
+  padding-inline:var(--gutter);padding-bottom:14px;cursor:grab;
+  /* so a snapped card lines up with the page gutter, not under it */
+  scroll-padding-left:var(--gutter);
+  scrollbar-width:thin;scrollbar-color:rgba(236,229,217,.25) transparent;
+  scroll-behavior:auto;
+}
 .strip::-webkit-scrollbar{height:3px}
 .strip::-webkit-scrollbar-thumb{background:rgba(236,229,217,.25)}
-.strip.is-drag{cursor:grabbing;scroll-snap-type:none}
-.strip > figure{margin:0;flex:0 0 min(74vw,380px);scroll-snap-align:center}
+.strip.is-drag{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
+.strip.is-nav{scroll-snap-type:none}
+.strip.is-drag *{pointer-events:none}
+.strip > figure{margin:0;flex:0 0 min(74vw,340px);scroll-snap-align:start}
+/* stop the browser's own image/link dragging, which otherwise eats the gesture */
+.strip img,.strip a{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
 .strip figcaption{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-dim);padding-top:10px;display:flex;justify-content:space-between;gap:10px}
 
 /* ---------- gallery ---------- */
@@ -375,3 +389,19 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 .to-top svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:600px){.to-top{width:44px;height:44px}}
 @media print{.to-top{display:none}}
+
+/* ---------- strip arrows ---------- */
+.strip-nav{display:none;gap:8px}
+@media (min-width:760px){.strip-nav{display:flex}}
+.strip-nav button{
+  width:44px;height:44px;border-radius:50%;border:1px solid var(--line);
+  background:none;color:var(--bone-dim);cursor:pointer;display:grid;place-items:center;
+  transition:color .3s ease,border-color .3s ease,background .3s ease,opacity .3s ease;
+}
+.strip-nav button:hover:not(:disabled){color:var(--bone);border-color:rgba(236,229,217,.34);background:rgba(196,136,60,.12)}
+.strip-nav button:disabled{opacity:.3;cursor:default}
+.strip-nav svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- tighter joins between two related sections ---------- */
+.section.tight-bottom{padding-bottom:clamp(30px,4vw,56px)}
+.section.tight-top{padding-top:clamp(30px,4vw,56px)}

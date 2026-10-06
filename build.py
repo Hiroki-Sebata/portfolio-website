@@ -70,7 +70,10 @@ random.Random(20261006).shuffle(ALL_SHUFFLED)
 # ---------------------------------------------------------------- picks
 HERO = ["ja-48", "nm-39", "na-5", "da-33"]
 # home strip: one frame per wedding, in the order you asked for, each linking to its album
-STRIP = [("nm-28", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd")]
+# One frame per wedding, in the order you asked for; the last two follow so every
+# album is reachable from the home page and the strip has something to scroll.
+STRIP = [("nm-28", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd"),
+         ("ja-29", "ja"), ("ai-3", "ai")]
 CTA_IMG = {"index": "ja-59", "work": "nm-11", "about": "da-3", "offer": "na-10"}
 
 # Where to anchor a photograph when a wide screen crops it. A laptop window is
@@ -346,13 +349,23 @@ def build(lang):
     </div>
   </section>
 
-  <section class="section">
+  <section class="section tight-bottom">
     <div class="wrap" style="margin-bottom:clamp(26px,4vw,48px)">
       <div class="railed">
         <div class="rail reveal"><span>{c["s2_rail1"]}</span><span>{c["s2_rail2"]}</span></div>
         <div class="reveal" style="display:flex;flex-wrap:wrap;gap:18px;align-items:end;justify-content:space-between">
           <h2 class="h-lg" style="max-width:22ch">{c["s2_h"]}</h2>
-          <a class="btn" href="work.html">{c["s2_btn"]}</a>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="strip-nav" data-strip-nav>
+              <button type="button" data-strip-prev aria-label="{c["strip_prev"]}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <button type="button" data-strip-next aria-label="{c["strip_next"]}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+            <a class="btn" href="work.html">{c["s2_btn"]}</a>
+          </div>
         </div>
       </div>
     </div>
@@ -362,7 +375,7 @@ def build(lang):
     <div class="wrap"><p class="field-note" style="margin-top:14px">{c["work_album_hint"]}</p></div>
   </section>
 
-  <section class="section">
+  <section class="section tight-top">
     <div class="wrap">
       <div class="quotes" data-quotes>
         <p class="eyebrow" style="margin-bottom:2.4em">{c["s4_eyebrow"]}</p>

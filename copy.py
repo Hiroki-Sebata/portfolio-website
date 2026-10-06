@@ -3,6 +3,8 @@
 
 COPY = {
  "en": {
+  "strip_prev": "Previous weddings",
+  "strip_next": "More weddings",
   "send_fail_sub": "Something went wrong on the way. Please email me directly at",
   "send_fail": "The message could not be sent.",
   "sent_ok_sub": "I reply within two days, usually sooner.",
@@ -112,6 +114,8 @@ COPY = {
  },
 
  "pl": {
+  "strip_prev": "Poprzednie śluby",
+  "strip_next": "Kolejne śluby",
   "send_fail_sub": "Coś poszło nie tak po drodze. Proszę napisać bezpośrednio na adres",
   "send_fail": "Nie udało się wysłać wiadomości.",
   "sent_ok_sub": "Odpowiadam w ciągu dwóch dni, zwykle szybciej.",

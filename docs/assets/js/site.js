@@ -94,20 +94,72 @@
     if (nx) nx.addEventListener('click', function () { show(q + 1); });
   }
 
-  /* ---- drag strips ---- */
+  /* ---- strips: drag to scroll, with arrows as the obvious alternative ---- */
   doc.querySelectorAll('[data-strip]').forEach(function (strip) {
-    var down = false, startX = 0, startLeft = 0, moved = 0;
+    var down = false, startX = 0, startLeft = 0, moved = 0, pid = null;
+
+    // The browser's native image/link dragging would otherwise swallow the gesture.
+    strip.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
     strip.addEventListener('pointerdown', function (e) {
-      if (e.pointerType === 'touch') return;
-      down = true; moved = 0; startX = e.clientX; startLeft = strip.scrollLeft;
-      strip.classList.add('is-drag');
+      if (e.pointerType === 'touch' || e.button !== 0) return;   // touch scrolls natively
+      down = true; moved = 0; pid = e.pointerId;
+      startX = e.clientX; startLeft = strip.scrollLeft;
+      e.preventDefault();
     });
-    window.addEventListener('pointermove', function (e) {
+    strip.addEventListener('pointermove', function (e) {
+      if (!down || e.pointerId !== pid) return;
+      var dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) < 4) return;                    // let small wobbles be clicks
+      if (!moved) {
+        strip.classList.add('is-drag');
+        try { strip.setPointerCapture(pid); } catch (err) {}
+      }
+      moved = Math.abs(dx);
+      strip.scrollLeft = startLeft - dx;
+    });
+    function release() {
       if (!down) return;
-      var dx = e.clientX - startX; moved = Math.abs(dx); strip.scrollLeft = startLeft - dx;
-    });
-    window.addEventListener('pointerup', function () { if (down) { down = false; strip.classList.remove('is-drag'); } });
-    strip.addEventListener('click', function (e) { if (moved > 6) e.preventDefault(); }, true);
+      down = false;
+      if (pid !== null) { try { strip.releasePointerCapture(pid); } catch (err) {} }
+      pid = null;
+      strip.classList.remove('is-drag');
+    }
+    strip.addEventListener('pointerup', release);
+    strip.addEventListener('pointercancel', release);
+    window.addEventListener('blur', release);
+    // a drag that ends on a card must not also follow its link
+    strip.addEventListener('click', function (e) { if (moved > 4) { e.preventDefault(); e.stopPropagation(); } }, true);
+
+    // arrows
+    var nav = doc.querySelector('[data-strip-nav]');
+    if (nav) {
+      var prev = nav.querySelector('[data-strip-prev]');
+      var next = nav.querySelector('[data-strip-next]');
+      function step() {
+        var card = strip.querySelector('figure');
+        return card ? card.getBoundingClientRect().width + 16 : strip.clientWidth * 0.8;
+      }
+      function sync() {
+        var max = strip.scrollWidth - strip.clientWidth - 2;
+        if (prev) prev.disabled = strip.scrollLeft <= 2;
+        if (next) next.disabled = strip.scrollLeft >= max;
+      }
+      var navTimer = null;
+      function go(dir) {
+        // Scroll snapping cancels an animated scroll and pulls the strip back to
+        // where it started, so turn it off for the length of the animation.
+        strip.classList.add('is-nav');
+        strip.scrollBy({ left: dir * step(), behavior: reduce ? 'auto' : 'smooth' });
+        clearTimeout(navTimer);
+        navTimer = setTimeout(function () { strip.classList.remove('is-nav'); }, 600);
+      }
+      if (prev) prev.addEventListener('click', function () { go(-1); });
+      if (next) next.addEventListener('click', function () { go(1); });
+      strip.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync, { passive: true });
+      sync();
+    }
   });
 
   /* ---- work page tabs ---- */
