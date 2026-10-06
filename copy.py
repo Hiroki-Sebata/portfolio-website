@@ -3,6 +3,11 @@
 
 COPY = {
  "en": {
+  "send_fail_sub": "Something went wrong on the way. Please email me directly at",
+  "send_fail": "The message could not be sent.",
+  "sent_ok_sub": "I reply within two days, usually sooner.",
+  "sent_ok": "Thank you — your enquiry is on its way.",
+  "sending": "Sending…",
   "album_back": "All work",
   "album_eyebrow": "Album",
   "album_lede": "Every photograph from this wedding. Press any of them to open it full size.",
@@ -91,8 +96,8 @@ COPY = {
   "f_cov": "What you are after",
   "f_cov_opts": ["Choose one","Film only","Film and photography","Photography only","Not sure yet"],
   "f_notes": "Anything else", "f_notes_ph": "How the day runs, what matters most, anything you are worried about.",
-  "f_send": "Prepare my enquiry",
-  "form_note": "This form does not send email on its own. It checks what you have written and lays it out so you can copy it into a message — the address is just below.",
+  "f_send": "Send enquiry",
+  "form_note": "Your details come straight to my inbox and go nowhere else.",
   "direct_h": "Or reach me directly",
   "l_email": "Email", "l_phone": "Phone", "l_ig": "Instagram",
   "copy": "Copy",
@@ -107,6 +112,11 @@ COPY = {
  },
 
  "pl": {
+  "send_fail_sub": "Coś poszło nie tak po drodze. Proszę napisać bezpośrednio na adres",
+  "send_fail": "Nie udało się wysłać wiadomości.",
+  "sent_ok_sub": "Odpowiadam w ciągu dwóch dni, zwykle szybciej.",
+  "sent_ok": "Dziękuję — zapytanie zostało wysłane.",
+  "sending": "Wysyłanie…",
   "album_back": "Całe portfolio",
   "album_eyebrow": "Album",
   "album_lede": "Wszystkie zdjęcia z tego ślubu. Kliknijcie dowolne, aby otworzyć je w pełnym rozmiarze.",
@@ -195,8 +205,8 @@ COPY = {
   "f_cov": "Czego potrzebujecie",
   "f_cov_opts": ["Wybierzcie","Tylko film","Film i zdjęcia","Tylko zdjęcia","Jeszcze nie wiemy"],
   "f_notes": "Coś jeszcze", "f_notes_ph": "Jak wygląda dzień, co jest dla Was najważniejsze, o co się martwicie.",
-  "f_send": "Przygotuj zapytanie",
-  "form_note": "Ten formularz nie wysyła wiadomości samodzielnie. Sprawdza to, co wpisaliście, i układa w gotowy tekst do skopiowania — adres e-mail znajdziecie niżej.",
+  "f_send": "Wyślij zapytanie",
+  "form_note": "Wasze dane trafiają prosto na moją skrzynkę i nigdzie indziej.",
   "direct_h": "Albo bezpośrednio",
   "l_email": "E-mail", "l_phone": "Telefon", "l_ig": "Instagram",
   "copy": "Kopiuj",

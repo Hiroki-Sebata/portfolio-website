@@ -73,8 +73,15 @@
     <div class="wrap railed">
       <div class="rail"><span>Kontakt</span></div>
       <div>
-        <p class="note" style="max-width:58ch;margin-bottom:2.6em">Ten formularz nie wysyła wiadomości samodzielnie. Sprawdza to, co wpisaliście, i układa w gotowy tekst do skopiowania — adres e-mail znajdziecie niżej.</p>
-        <form class="form" id="enquiry" data-mailto="sebasuta@gmail.com" novalidate>
+        <p class="note" style="max-width:58ch;margin-bottom:2.6em">Wasze dane trafiają prosto na moją skrzynkę i nigdzie indziej.</p>
+        <form class="form" id="enquiry" data-mailto="sebasuta@gmail.com" novalidate
+              action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="aa2ad116-3270-435b-9b0b-bd428f8ce67b">
+          <input type="hidden" name="subject" value="Nowe zapytanie ze strony hiroki-filmuje.pl">
+          <input type="hidden" name="from_name" value="Hiroki Filmuje">
+          <label class="sr" aria-hidden="true">
+            <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
+          </label>
           <div class="field">
             <label for="f-name">Wasze imiona</label>
             <input id="f-name" name="name" type="text" autocomplete="name" placeholder="najlepiej oboje" data-required>
@@ -108,7 +115,7 @@
             <label for="f-notes">Coś jeszcze</label>
             <textarea id="f-notes" name="notes" placeholder="Jak wygląda dzień, co jest dla Was najważniejsze, o co się martwicie."></textarea>
           </div>
-          <div><button class="btn btn-solid btn-lg" type="submit">Przygotuj zapytanie</button></div>
+          <div><button class="btn btn-solid btn-lg" type="submit">Wyślij zapytanie</button></div>
           <div class="form-status" id="enquiry-status" tabindex="-1" role="status" hidden></div>
         </form>
 

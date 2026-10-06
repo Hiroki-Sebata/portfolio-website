@@ -74,14 +74,23 @@ Photographs are resized and have all EXIF metadata, including GPS, stripped.
 
 ## The contact form
 
-It validates what a visitor types and formats it for copying — it does **not**
-send email. GitHub Pages serves files only; it cannot run code, so there is
-nothing on the server to receive a submission.
+The form posts to **Web3Forms**, which emails the enquiry to `sebasuta@gmail.com`.
+No server of our own is involved, which is what makes it work on GitHub Pages.
 
-To make it send, the quickest route is **Formspree** or **Web3Forms**: sign up,
-get a form URL, then in `build.py` give the `<form>` an `action` and `method="POST"`
-and remove the `e.preventDefault()` branch in `docs/assets/js/site.js`. Or move
-the site to Netlify or Cloudflare Pages, which handle forms themselves.
+The access key lives in `build.py` as `WEB3FORMS_KEY` and is written into both
+contact pages. Web3Forms keys are *meant* to be public — the key sits in the page
+source of every site that uses one. Spam is held back by a hidden `botcheck`
+field. If the key is ever abused, generate a new one at web3forms.com and change
+that one line.
+
+The page submits with `fetch`, so the visitor stays put and sees a message in
+place. If the request fails for any reason, the form shows what they wrote,
+formatted for copying, along with the email address — nothing typed is lost.
+With JavaScript switched off, the plain `action="https://api.web3forms.com/submit"`
+still works; the visitor just lands on Web3Forms' own confirmation page.
+
+Note: Web3Forms refuses submissions sent from a server (curl and the like) on the
+free plan. Test it from a browser.
 
 ## Domain
 

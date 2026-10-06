@@ -15,7 +15,12 @@
       reqMail: 'Proszę podać adres e-mail, na który mogę odpowiedzieć',
       copied: 'Skopiowano',
       selectCopy: 'Zaznacz i skopiuj',
-      noDate: 'nie podano', of: 'z', play: 'Obejrzyj film'
+      noDate: 'nie podano', of: 'z', play: 'Obejrzyj film',
+      sending: 'Wysyłanie…',
+      sentOk: 'Dziękuję — zapytanie zostało wysłane.',
+      sentOkSub: 'Odpowiadam w ciągu dwóch dni, zwykle szybciej.',
+      failed: 'Nie udało się wysłać wiadomości.',
+      failedSub: 'Coś poszło nie tak po drodze. Proszę napisać bezpośrednio na adres'
     },
     en: {
       films: 'Films will appear here shortly.',
@@ -28,7 +33,12 @@
       reqMail: 'Enter an email address I can reply to',
       copied: 'Copied',
       selectCopy: 'Select + copy',
-      noDate: 'not given', of: 'of', play: 'Watch the film'
+      noDate: 'not given', of: 'of', play: 'Watch the film',
+      sending: 'Sending…',
+      sentOk: 'Thank you — your enquiry is on its way.',
+      sentOkSub: 'I reply within two days, usually sooner.',
+      failed: 'The message could not be sent.',
+      failedSub: 'Something went wrong on the way. Please email me directly at'
     }
   }[LANG];
 
@@ -266,11 +276,22 @@
     });
   });
 
-  /* ---- enquiry form (no backend; see README) ---- */
+  /* ---- enquiry form: posted to Web3Forms, which emails it on ---- */
   var form = doc.getElementById('enquiry');
   if (form) {
     var status = doc.getElementById('enquiry-status');
     var mail = form.getAttribute('data-mailto') || '';
+
+    function say(html) {
+      status.hidden = false;
+      status.innerHTML = html;
+    }
+    function esc(v) {
+      return String(v == null ? '' : v).replace(/[<>&]/g, function (ch) {
+        return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[ch];
+      });
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var ok = true, firstBad = null;
@@ -284,20 +305,41 @@
       });
       if (!ok) {
         if (firstBad) firstBad.focus();
-        status.hidden = false;
-        status.innerHTML = '<strong>' + T.invalid + '</strong> ' + T.invalidBody;
+        say('<strong>' + T.invalid + '</strong> ' + T.invalidBody);
         return;
       }
-      function val(id) { var el = doc.getElementById(id); return el && el.value.trim() ? el.value.trim() : T.noDate; }
-      var lines = [
-        val('f-name'), val('f-email'), val('f-date'), val('f-place'), val('f-coverage'), val('f-notes')
-      ];
-      status.hidden = false;
-      status.innerHTML = '<strong>' + T.sent + '</strong> ' + T.sentBody +
-        '<code style="user-select:all">' + mail + '</code>.' +
-        '<br><br><span class="field-note" style="text-transform:none;letter-spacing:0;font-size:.8rem;line-height:1.7">' +
-        lines.map(function (l) { return String(l).replace(/[<>]/g, ''); }).join('<br>') + '</span>';
-      status.focus();
+
+      var btn = form.querySelector('button[type="submit"]');
+      var btnText = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = T.sending; }
+      say('<strong>' + T.sending + '</strong>');
+
+      var data = Object.fromEntries(new FormData(form).entries());
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(function (r) { return r.json().catch(function () { return { success: r.ok }; }); })
+        .then(function (res) {
+          if (!res || !res.success) throw new Error((res && res.message) || 'failed');
+          form.reset();
+          say('<strong>' + T.sentOk + '</strong><br>' + T.sentOkSub);
+        })
+        .catch(function () {
+          // Nothing is lost: show what they wrote so it can be copied into an email.
+          function val(id) { var el = doc.getElementById(id); return el && el.value.trim() ? el.value.trim() : T.noDate; }
+          var lines = [val('f-name'), val('f-email'), val('f-date'), val('f-place'),
+                       val('f-coverage'), val('f-notes')];
+          say('<strong>' + T.failed + '</strong> ' + T.failedSub +
+              ' <code style="user-select:all">' + esc(mail) + '</code>.' +
+              '<br><br><span class="field-note" style="text-transform:none;letter-spacing:0;font-size:.8rem;line-height:1.7">' +
+              lines.map(esc).join('<br>') + '</span>');
+        })
+        .then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = btnText; }
+          status.focus();
+        });
     });
   }
 })();

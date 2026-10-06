@@ -19,6 +19,10 @@ PHONE_RAW = "+48516849121"
 INSTAGRAM = "https://www.instagram.com/hiroki_filmuje/"
 IG_HANDLE = "@hiroki_filmuje"
 DOMAIN = "hiroki-filmuje.pl"
+# Web3Forms delivers the enquiry form to EMAIL. This key is meant to be public:
+# it sits in the page source, like every Web3Forms key. Rotate it at web3forms.com
+# if it ever gets abused.
+WEB3FORMS_KEY = "aa2ad116-3270-435b-9b0b-bd428f8ce67b"
 
 PAGES = ["index", "work", "about", "offer", "contact"]
 NAV = {
@@ -590,6 +594,7 @@ def build(lang):
     opts = "\n                ".join(
         (f'<option value="">{o}</option>' if i == 0 else f'<option>{o}</option>')
         for i, o in enumerate(c["f_cov_opts"]))
+    subject = ("Nowe zapytanie ze strony " if lang == "pl" else "New enquiry from ") + DOMAIN
     faq = "\n            ".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in c["faq"])
     contact = f"""  <section class="section">
     <div class="wrap railed">
@@ -606,7 +611,14 @@ def build(lang):
       <div class="rail"><span>{NAV[lang]["contact"]}</span></div>
       <div>
         <p class="note" style="max-width:58ch;margin-bottom:2.6em">{c["form_note"]}</p>
-        <form class="form" id="enquiry" data-mailto="{EMAIL}" novalidate>
+        <form class="form" id="enquiry" data-mailto="{EMAIL}" novalidate
+              action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
+          <input type="hidden" name="subject" value="{subject}">
+          <input type="hidden" name="from_name" value="{BRAND}">
+          <label class="sr" aria-hidden="true">
+            <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
+          </label>
           <div class="field">
             <label for="f-name">{c["f_name"]}</label>
             <input id="f-name" name="name" type="text" autocomplete="name" placeholder="{c["f_name_ph"]}" data-required>

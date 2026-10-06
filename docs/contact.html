@@ -73,8 +73,15 @@
     <div class="wrap railed">
       <div class="rail"><span>Contact</span></div>
       <div>
-        <p class="note" style="max-width:58ch;margin-bottom:2.6em">This form does not send email on its own. It checks what you have written and lays it out so you can copy it into a message — the address is just below.</p>
-        <form class="form" id="enquiry" data-mailto="sebasuta@gmail.com" novalidate>
+        <p class="note" style="max-width:58ch;margin-bottom:2.6em">Your details come straight to my inbox and go nowhere else.</p>
+        <form class="form" id="enquiry" data-mailto="sebasuta@gmail.com" novalidate
+              action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="aa2ad116-3270-435b-9b0b-bd428f8ce67b">
+          <input type="hidden" name="subject" value="New enquiry from hiroki-filmuje.pl">
+          <input type="hidden" name="from_name" value="Hiroki Filmuje">
+          <label class="sr" aria-hidden="true">
+            <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off">
+          </label>
           <div class="field">
             <label for="f-name">Your names</label>
             <input id="f-name" name="name" type="text" autocomplete="name" placeholder="both of you, if you like" data-required>
@@ -108,7 +115,7 @@
             <label for="f-notes">Anything else</label>
             <textarea id="f-notes" name="notes" placeholder="How the day runs, what matters most, anything you are worried about."></textarea>
           </div>
-          <div><button class="btn btn-solid btn-lg" type="submit">Prepare my enquiry</button></div>
+          <div><button class="btn btn-solid btn-lg" type="submit">Send enquiry</button></div>
           <div class="form-status" id="enquiry-status" tabindex="-1" role="status" hidden></div>
         </form>
 
