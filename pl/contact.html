@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kontakt — Hiroki Filmuje</title>
+<meta name="description" content="Zapytaj o termin. E-mail sebasuta@gmail.com lub +48 516 849 121.">
+<meta property="og:title" content="Kontakt — Hiroki Filmuje">
+<meta property="og:description" content="Zapytaj o termin. E-mail sebasuta@gmail.com lub +48 516 849 121.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="../assets/img/lg/da-29.jpg">
+<meta name="theme-color" content="#0c0e0d">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Przejdź do treści</a>
+<header class="site-head">
+  <div class="wrap site-head-in">
+    <a class="brand" href="index.html">Hiroki Filmuje<small>Filmy i fotografia ślubna</small></a>
+    <div class="head-right">
+      <nav class="nav-inline" aria-label="Menu">
+          <a href="index.html">Start</a>
+          <a href="work.html">Portfolio</a>
+          <a href="about.html">O mnie</a>
+          <a href="offer.html">Oferta</a>
+      </nav>
+      <span class="lang">
+        <a href="contact.html" hreflang="pl" aria-current="true">PL</a><i>/</i><a href="../contact.html" hreflang="en">EN</a>
+      </span>
+      <a class="btn" href="contact.html">Kontakt</a>
+      <button class="menu-btn" type="button" data-drawer-open aria-controls="drawer" aria-label="Menu"><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu" data-open="false">
+  <div class="drawer-pane">
+    <div class="drawer-top">
+      <span class="eyebrow">Hiroki Filmuje</span>
+      <button class="drawer-close" type="button" data-drawer-close>Zamknij</button>
+    </div>
+    <nav class="drawer-nav" aria-label="Menu">
+        <a href="index.html">Start</a>
+        <a href="work.html">Portfolio</a>
+        <a href="about.html">O mnie</a>
+        <a href="offer.html">Oferta</a>
+        <a href="contact.html">Kontakt</a>
+    </nav>
+    <div class="drawer-meta">
+      <a href="mailto:sebasuta@gmail.com">sebasuta@gmail.com</a>
+      <a href="tel:+48516849121">+48 516 849 121</a>
+      <a href="https://www.instagram.com/hiroki_filmuje/" target="_blank" rel="noopener">Instagram @hiroki_filmuje</a>
+    </div>
+  </div>
+  <div class="drawer-art"><img src="../assets/img/md/ja-40.jpg" alt="" loading="lazy"></div>
+</div>
+<main id="main">
+  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>Kontakt</span><span>Odpowiadam zwykle w 2 dni</span></div>
+      <div>
+        <h1 class="h-xl">Napiszcie do mnie</h1>
+        <p class="lede dim" style="max-width:40ch;margin-top:1em">Termin i miejsce w zupełności wystarczą na początek. Resztę ustalimy na rozmowie.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>Kontakt</span></div>
+      <div>
+        <p class="note" style="max-width:58ch;margin-bottom:2.6em">Ten formularz nie wysyła wiadomości samodzielnie. Sprawdza to, co wpisaliście, i układa w gotowy tekst do skopiowania — adres e-mail znajdziecie niżej.</p>
+        <form class="form" id="enquiry" data-mailto="sebasuta@gmail.com" novalidate>
+          <div class="field">
+            <label for="f-name">Wasze imiona</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="najlepiej oboje" data-required>
+            <p class="field-err" id="f-name-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="f-email">E-mail</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" placeholder="adres, na który mam odpowiedzieć" data-required>
+            <p class="field-err" id="f-email-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="f-date">Data ślubu</label>
+            <input id="f-date" name="date" type="date">
+            <p class="field-note">Zostawcie puste, jeśli termin nie jest jeszcze ustalony</p>
+          </div>
+          <div class="field">
+            <label for="f-place">Miejsce</label>
+            <input id="f-place" name="place" type="text" placeholder="sala, miasto albo sam region">
+          </div>
+          <div class="field">
+            <label for="f-coverage">Czego potrzebujecie</label>
+            <select id="f-coverage" name="coverage">
+                <option value="">Wybierzcie</option>
+                <option>Tylko film</option>
+                <option>Film i zdjęcia</option>
+                <option>Tylko zdjęcia</option>
+                <option>Jeszcze nie wiemy</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-notes">Coś jeszcze</label>
+            <textarea id="f-notes" name="notes" placeholder="Jak wygląda dzień, co jest dla Was najważniejsze, o co się martwicie."></textarea>
+          </div>
+          <div><button class="btn btn-solid btn-lg" type="submit">Przygotuj zapytanie</button></div>
+          <div class="form-status" id="enquiry-status" tabindex="-1" role="status" hidden></div>
+        </form>
+
+        <div class="contact-lines">
+          <h2 class="h-sm" style="margin-top:clamp(28px,4vw,46px)">Albo bezpośrednio</h2>
+          <p class="cline"><b>E-mail</b>
+            <code id="c-mail">sebasuta@gmail.com</code>
+            <button class="copy-btn" type="button" data-copy="sebasuta@gmail.com" data-copy-target="c-mail">Kopiuj</button></p>
+          <p class="cline"><b>Telefon</b>
+            <code id="c-tel">+48 516 849 121</code>
+            <button class="copy-btn" type="button" data-copy="+48516849121" data-copy-target="c-tel">Kopiuj</button></p>
+          <p class="cline"><b>Instagram</b>
+            <a class="plain" href="https://www.instagram.com/hiroki_filmuje/" target="_blank" rel="noopener">@hiroki_filmuje</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>FAQ</span></div>
+      <div>
+        <h2 class="h-lg">Zanim zapytacie</h2>
+        <div class="faq">
+            <details><summary>Jak daleko dojeżdżasz?</summary><p>Dojazd wyceniam według odległości — napiszcie, gdzie odbywa się ślub, a podam kwotę razem z ceną pakietu.</p></details>
+            <details><summary>Kiedy dostaniemy film?</summary><p>Do 14 dni od ślubu. Dostajecie link do pobrania przez WeTransfer lub Google Drive.</p></details>
+            <details><summary>Pracujesz sam?</summary><p>Tak. Jedna osoba do filmu i do zdjęć — dzięki temu całość jest spójna stylistycznie.</p></details>
+            <details><summary>Czy możemy wybrać muzykę?</summary><p>Tak — jedna piosenka według Waszego wyboru wchodzi w skład każdego pakietu.</p></details>
+            <details><summary>Jak zarezerwować termin?</summary><p>Podpisana umowa i 30% zaliczki rezerwują termin. 50% płatne w dniu ślubu, ostatnie 20% po dostarczeniu gotowego filmu.</p></details>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Hiroki Filmuje</h4>
+        <p class="dim" style="max-width:34ch;margin:0">Filmy i fotografia ślubna. Pracuję solo — od pierwszego kadru do gotowego filmu.</p>
+      </div>
+      <div>
+        <h4>Strony</h4>
+        <ul class="foot-list">
+            <li><a href="index.html">Start</a></li>
+            <li><a href="work.html">Portfolio</a></li>
+            <li><a href="about.html">O mnie</a></li>
+            <li><a href="offer.html">Oferta</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <ul class="foot-list">
+          <li><a href="mailto:sebasuta@gmail.com">sebasuta@gmail.com</a></li>
+          <li><a href="tel:+48516849121">+48 516 849 121</a></li>
+          <li><a href="https://www.instagram.com/hiroki_filmuje/" target="_blank" rel="noopener">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="yr">2026</span> Hiroki Filmuje · Wszelkie prawa zastrzeżone</span>
+      <span>Zdjęcia i filmy: Hiroki Filmuje</span>
+    </div>
+  </div>
+</footer>
+<script src="../assets/js/films.js"></script>
+<script src="../assets/js/site.js"></script>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
+</body>
+</html>
