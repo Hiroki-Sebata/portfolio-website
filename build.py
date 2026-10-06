@@ -207,7 +207,7 @@ def header(lang, page, base):
         ig=INSTAGRAM, ig_handle=IG_HANDLE, base=base, drawer_img=HERO[1])
 
 
-def footer(lang, base):
+def footer(lang, base, page=""):
     nav = NAV[lang]
     links = "\n            ".join(f'<li><a href="{p}.html">{nav[p]}</a></li>' for p in PAGES)
     if lang == "pl":
@@ -219,6 +219,9 @@ def footer(lang, base):
         h_pages, h_contact, rights = "Pages", "Contact", "All rights reserved"
         made = "Photographs and films: " + BRAND
     totop = "Wróć na górę" if lang == "pl" else "Back to top"
+    # The Work page is long enough that halfway is a long way down, so there the
+    # button appears after a fixed amount of scrolling instead.
+    totop_mode = "distance" if page == "work" else "half"
     return f"""<footer class="site-foot">
   <div class="wrap">
     <div class="foot-grid">
@@ -247,7 +250,7 @@ def footer(lang, base):
     </div>
   </div>
 </footer>
-<button class="to-top" type="button" id="to-top" aria-label="{totop}">
+<button class="to-top" type="button" id="to-top" aria-label="{totop}" data-mode="{totop_mode}">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
 <script src="{base}assets/js/films.js"></script>
@@ -281,7 +284,7 @@ def cta_band(lang, page, base):
 def write(lang, page, title, desc, body):
     base = "" if lang == "en" else "../"
     out = (head(lang, page, title, desc, base) + "\n" + header(lang, page, base) +
-           '\n<main id="main">\n' + body.replace("@@", base) + "\n</main>\n" + footer(lang, base))
+           '\n<main id="main">\n' + body.replace("@@", base) + "\n</main>\n" + footer(lang, base, page))
     d = OUT if lang == "en" else os.path.join(OUT, "pl")
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, page + ".html"), "w", encoding="utf-8").write(out)
@@ -360,18 +363,6 @@ def build(lang):
   </section>
 
   <section class="section">
-    <div class="wrap split">
-      <div class="reveal"><div class="ph r45"><img src="@@assets/img/md/hiroki.jpg" alt="Hiroki" loading="lazy" decoding="async"></div></div>
-      <div class="reveal">
-        <p class="eyebrow">{c["s3_eyebrow"]}</p>
-        <h2 class="h-lg" style="margin-top:.7em">{c["s3_h"]}</h2>
-        <div class="prose dim" style="margin-top:1.4em"><p>{c["s3_p1"]}</p><p>{c["s3_p2"]}</p></div>
-        <a class="btn" href="about.html" style="margin-top:2em">{c["s3_btn"]}</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
     <div class="wrap">
       <div class="quotes" data-quotes>
         <p class="eyebrow" style="margin-bottom:2.4em">{c["s4_eyebrow"]}</p>
@@ -383,6 +374,18 @@ def build(lang):
         </div>
       </div>
       <p class="field-note" style="text-align:center;margin-top:2.4em">{c["quote_note"]}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap split">
+      <div class="reveal"><div class="ph r45"><img src="@@assets/img/md/hiroki.jpg" alt="Hiroki" loading="lazy" decoding="async"></div></div>
+      <div class="reveal">
+        <p class="eyebrow">{c["s3_eyebrow"]}</p>
+        <h2 class="h-lg" style="margin-top:.7em">{c["s3_h"]}</h2>
+        <div class="prose dim" style="margin-top:1.4em"><p>{c["s3_p1"]}</p><p>{c["s3_p2"]}</p></div>
+        <a class="btn" href="about.html" style="margin-top:2em">{c["s3_btn"]}</a>
+      </div>
     </div>
   </section>
 

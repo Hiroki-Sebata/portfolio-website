@@ -266,8 +266,13 @@
       ticking = false;
       var doch = doc.documentElement;
       var scrollable = (doc.body.scrollHeight || 0) - window.innerHeight;
+      var y = window.scrollY || doch.scrollTop;
       // Nothing to go back to on a page that barely scrolls.
-      var past = scrollable > 400 && (window.scrollY || doch.scrollTop) > scrollable * 0.5;
+      // "distance" is for very long pages, where halfway is a long way down:
+      // the button turns up after about a screen and a half of scrolling.
+      var past = scrollable > 400 && (toTop.getAttribute('data-mode') === 'distance'
+        ? y > window.innerHeight * 1.5
+        : y > scrollable * 0.5);
       toTop.classList.toggle('is-shown', past);
     }
     window.addEventListener('scroll', function () {
