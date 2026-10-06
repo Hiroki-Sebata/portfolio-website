@@ -90,8 +90,26 @@
     }
     show(0);
     var p = quotes.querySelector('[data-quote-prev]'), nx = quotes.querySelector('[data-quote-next]');
-    if (p) p.addEventListener('click', function () { show(q - 1); });
-    if (nx) nx.addEventListener('click', function () { show(q + 1); });
+
+    // Advance on its own every 5s, but never while someone is reading it:
+    // hovering, focusing or pressing an arrow all hold it where it is.
+    var qTimer = null;
+    function qStart() {
+      if (reduce || items.length < 2) return;
+      qStop();
+      qTimer = setInterval(function () { show(q + 1); }, 5000);
+    }
+    function qStop() { if (qTimer) { clearInterval(qTimer); qTimer = null; } }
+    function qNudge() { qStop(); qStart(); }
+
+    if (p) p.addEventListener('click', function () { show(q - 1); qNudge(); });
+    if (nx) nx.addEventListener('click', function () { show(q + 1); qNudge(); });
+    quotes.addEventListener('mouseenter', qStop);
+    quotes.addEventListener('mouseleave', qStart);
+    quotes.addEventListener('focusin', qStop);
+    quotes.addEventListener('focusout', qStart);
+    doc.addEventListener('visibilitychange', function () { doc.hidden ? qStop() : qStart(); });
+    qStart();
   }
 
   /* ---- strips: drag to scroll, with arrows as the obvious alternative ---- */
@@ -131,35 +149,65 @@
     // a drag that ends on a card must not also follow its link
     strip.addEventListener('click', function (e) { if (moved > 4) { e.preventDefault(); e.stopPropagation(); } }, true);
 
-    // arrows
     var nav = doc.querySelector('[data-strip-nav]');
-    if (nav) {
-      var prev = nav.querySelector('[data-strip-prev]');
-      var next = nav.querySelector('[data-strip-next]');
-      function step() {
-        var card = strip.querySelector('figure');
-        return card ? card.getBoundingClientRect().width + 16 : strip.clientWidth * 0.8;
-      }
-      function sync() {
-        var max = strip.scrollWidth - strip.clientWidth - 2;
-        if (prev) prev.disabled = strip.scrollLeft <= 2;
-        if (next) next.disabled = strip.scrollLeft >= max;
-      }
-      var navTimer = null;
-      function go(dir) {
-        // Scroll snapping cancels an animated scroll and pulls the strip back to
-        // where it started, so turn it off for the length of the animation.
-        strip.classList.add('is-nav');
-        strip.scrollBy({ left: dir * step(), behavior: reduce ? 'auto' : 'smooth' });
-        clearTimeout(navTimer);
-        navTimer = setTimeout(function () { strip.classList.remove('is-nav'); }, 600);
-      }
-      if (prev) prev.addEventListener('click', function () { go(-1); });
-      if (next) next.addEventListener('click', function () { go(1); });
-      strip.addEventListener('scroll', sync, { passive: true });
-      window.addEventListener('resize', sync, { passive: true });
-      sync();
+    var prev = nav && nav.querySelector('[data-strip-prev]');
+    var next = nav && nav.querySelector('[data-strip-next]');
+
+    function step() {
+      var card = strip.querySelector('figure');
+      return card ? card.getBoundingClientRect().width + 16 : strip.clientWidth * 0.8;
     }
+    function maxScroll() { return strip.scrollWidth - strip.clientWidth - 2; }
+    function sync() {
+      if (prev) prev.disabled = strip.scrollLeft <= 2;
+      if (next) next.disabled = strip.scrollLeft >= maxScroll();
+    }
+    var navTimer = null;
+    function scrollToX(x) {
+      // Scroll snapping cancels an animated scroll and pulls the strip back to
+      // where it started, so turn it off for the length of the animation.
+      strip.classList.add('is-nav');
+      strip.scrollTo({ left: x, behavior: reduce ? 'auto' : 'smooth' });
+      clearTimeout(navTimer);
+      navTimer = setTimeout(function () { strip.classList.remove('is-nav'); }, 700);
+    }
+    function go(dir) { scrollToX(strip.scrollLeft + dir * step()); }
+
+    if (prev) prev.addEventListener('click', function () { go(-1); nudge(); });
+    if (next) next.addEventListener('click', function () { go(1); nudge(); });
+    strip.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
+    sync();
+
+    // Drift one card to the right every 5s, returning to the start at the end.
+    // Holds still while the pointer is over it, while dragging, while any card
+    // has keyboard focus, and while the tab is in the background.
+    var autoTimer = null, held = false;
+    function tick() {
+      if (held || strip.scrollWidth <= strip.clientWidth) return;
+      scrollToX(strip.scrollLeft >= maxScroll() ? 0 : strip.scrollLeft + step());
+    }
+    function start() {
+      if (reduce) return;
+      stop();
+      autoTimer = setInterval(tick, 5000);
+    }
+    function stop() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+    function nudge() { stop(); start(); }
+    function hold(v) { held = v; }
+
+    strip.addEventListener('mouseenter', function () { hold(true); });
+    strip.addEventListener('mouseleave', function () { hold(false); });
+    strip.addEventListener('focusin', function () { hold(true); });
+    strip.addEventListener('focusout', function () { hold(false); });
+    strip.addEventListener('pointerdown', function () { hold(true); });
+    window.addEventListener('pointerup', function () { hold(false); nudge(); });
+    if (nav) {
+      nav.addEventListener('mouseenter', function () { hold(true); });
+      nav.addEventListener('mouseleave', function () { hold(false); });
+    }
+    doc.addEventListener('visibilitychange', function () { doc.hidden ? stop() : start(); });
+    start();
   });
 
   /* ---- work page tabs ---- */

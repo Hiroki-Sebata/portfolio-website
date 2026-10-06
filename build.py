@@ -341,8 +341,8 @@ def build(lang):
       <div class="rail reveal"><span>{c["s1_rail1"]}</span><span>{c["s1_rail2"]}</span></div>
       <div class="reveal">
         <h2 class="h-lg">{c["s1_h"]}</h2>
-        <div class="prose dim" style="margin-top:1.6em"><p>{c["s1_p1"]}</p><p>{c["s1_p2"]}</p></div>
-        <ul class="specs" style="margin-top:2.4em;max-width:48ch">
+        <div class="prose dim" style="margin-top:1.2em"><p>{c["s1_p1"]}</p><p>{c["s1_p2"]}</p></div>
+        <ul class="specs" style="margin-top:1.6em;max-width:48ch">
             {specs}
         </ul>
       </div>
@@ -350,7 +350,7 @@ def build(lang):
   </section>
 
   <section class="section tight-bottom">
-    <div class="wrap" style="margin-bottom:clamp(26px,4vw,48px)">
+    <div class="wrap" style="margin-bottom:clamp(18px,2.4vw,32px)">
       <div class="railed">
         <div class="rail reveal"><span>{c["s2_rail1"]}</span><span>{c["s2_rail2"]}</span></div>
         <div class="reveal" style="display:flex;flex-wrap:wrap;gap:18px;align-items:end;justify-content:space-between">
@@ -378,7 +378,7 @@ def build(lang):
   <section class="section tight-top">
     <div class="wrap">
       <div class="quotes" data-quotes>
-        <p class="eyebrow" style="margin-bottom:2.4em">{c["s4_eyebrow"]}</p>
+        <p class="eyebrow" style="margin-bottom:1.5em">{c["s4_eyebrow"]}</p>
           {quotes}
         <div class="quote-nav">
           <button type="button" data-quote-prev aria-label="&#8592;">&#8592;</button>
@@ -386,7 +386,7 @@ def build(lang):
           <button type="button" data-quote-next aria-label="&#8594;">&#8594;</button>
         </div>
       </div>
-      <p class="field-note" style="text-align:center;margin-top:2.4em">{c["quote_note"]}</p>
+      <p class="field-note" style="text-align:center;margin-top:1.6em">{c["quote_note"]}</p>
     </div>
   </section>
 
@@ -426,7 +426,7 @@ def build(lang):
 
   <section class="section" data-panel="film">
     <div class="wrap">
-      <h2 class="h-md" style="margin-bottom:clamp(22px,3vw,38px)">{c["films_h"]}</h2>
+      <h2 class="h-md" style="margin-bottom:clamp(16px,2.2vw,28px)">{c["films_h"]}</h2>
       <div class="films" data-films></div>
     </div>
   </section>
@@ -441,14 +441,14 @@ def build(lang):
 
   <section class="section" data-panel="photo">
     <div class="wrap">
-      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;margin-bottom:clamp(20px,3vw,34px)">
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;margin-bottom:clamp(14px,2vw,24px)">
         <h2 class="h-md">{c["photos_h"]}</h2>
         <p class="field-note" style="margin:0">{c["work_album_hint"]}</p>
       </div>
       <div class="album-links">
           {album_links}
       </div>
-      <div class="gallery" data-gallery style="margin-top:clamp(22px,3vw,38px)">
+      <div class="gallery" data-gallery style="margin-top:clamp(16px,2.2vw,28px)">
         {gal}
       </div>
     </div>
@@ -576,7 +576,7 @@ def build(lang):
     <div class="wrap railed">
       <div class="rail"><span>{c["extras_h"]}</span></div>
       <div><h2 class="h-lg">{c["extras_h"]}</h2>
-        <ul class="specs" style="margin-top:1.8em;max-width:60ch">
+        <ul class="specs" style="margin-top:1.3em;max-width:60ch">
             {extras}
         </ul></div>
     </div>
@@ -630,7 +630,7 @@ def build(lang):
     <div class="wrap railed">
       <div class="rail"><span>{NAV[lang]["contact"]}</span></div>
       <div>
-        <p class="note" style="max-width:58ch;margin-bottom:2.6em">{c["form_note"]}</p>
+        <p class="note" style="max-width:58ch;margin-bottom:1.8em">{c["form_note"]}</p>
         <form class="form" id="enquiry" data-mailto="{EMAIL}" novalidate
               action="https://api.web3forms.com/submit" method="POST">
           <input type="hidden" name="access_key" value="{WEB3FORMS_KEY}">
@@ -672,8 +672,8 @@ def build(lang):
           <div class="form-status" id="enquiry-status" tabindex="-1" role="status" hidden></div>
         </form>
 
-        <div class="contact-lines">
-          <h2 class="h-sm" style="margin-top:clamp(28px,4vw,46px)">{c["direct_h"]}</h2>
+        <div class="contact-lines" style="margin-top:clamp(20px,2.6vw,32px)">
+          <h2 class="h-sm" style="margin-top:clamp(20px,2.6vw,34px)">{c["direct_h"]}</h2>
           <p class="cline"><b>{c["l_email"]}</b>
             <code id="c-mail">{EMAIL}</code>
             <button class="copy-btn" type="button" data-copy="{EMAIL}" data-copy-target="c-mail">{c["copy"]}</button></p>
