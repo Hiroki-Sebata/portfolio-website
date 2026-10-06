@@ -15,7 +15,7 @@
       reqMail: 'Proszę podać adres e-mail, na który mogę odpowiedzieć',
       copied: 'Skopiowano',
       selectCopy: 'Zaznacz i skopiuj',
-      noDate: 'nie podano', of: 'z'
+      noDate: 'nie podano', of: 'z', play: 'Obejrzyj film'
     },
     en: {
       films: 'Films will appear here shortly.',
@@ -28,7 +28,7 @@
       reqMail: 'Enter an email address I can reply to',
       copied: 'Copied',
       selectCopy: 'Select + copy',
-      noDate: 'not given', of: 'of'
+      noDate: 'not given', of: 'of', play: 'Watch the film'
     }
   }[LANG];
 
@@ -120,39 +120,76 @@
     select('all');
   }
 
-  /* ---- films from assets/js/films.js ---- */
+  /* ---- films: alternating rows, played in a window over the page ---- */
   var filmWrap = doc.querySelector('[data-films]');
+  var filmModal = doc.getElementById('film-modal');
   if (filmWrap) {
-    var list = (window.HF_FILMS || []).filter(function (f) {
-      return f && typeof f.id === 'string' && /^[A-Za-z0-9_-]{11}$/.test(f.id);
-    });
-    if (!list.length) {
-      filmWrap.innerHTML = '<p class="note" style="grid-column:1/-1"><b>' + T.films + '</b><br>' + T.filmsHint + '</p>';
+    var films = (window.HF_FILMS || []).filter(function (f) { return f && f.id && f.type; });
+    if (!films.length) {
+      filmWrap.innerHTML = '<p class="note"><b>' + T.films + '</b><br>' + T.filmsHint + '</p>';
     } else {
-      filmWrap.innerHTML = list.map(function (f) {
-        var thumb = 'https://i.ytimg.com/vi/' + f.id + '/hqdefault.jpg';
-        var place = (LANG === 'pl' ? (f.titlePl || f.placePl) : (f.titleEn || f.placeEn)) || f.place || '';
-        var label = (f.couple || place || 'Film').replace(/"/g, '');
-        return '<figure class="film">' +
-          '<button class="film-frame" type="button" data-yt="' + f.id + '" aria-label="' + label + '">' +
-            '<img src="' + thumb + '" alt="" loading="lazy">' +
+      filmWrap.innerHTML = films.map(function (f, i) {
+        var title = (LANG === 'pl' ? f.titlePl : f.titleEn) || '';
+        var text = (LANG === 'pl' ? f.textPl : f.textEn) || '';
+        var poster = 'assets/img/film/' + f.poster + '.jpg';
+        if (doc.documentElement.lang === 'pl') poster = '../' + poster;
+        return '<article class="film-row" data-flip="' + (i % 2 ? 'true' : 'false') + '">' +
+          '<button class="film-frame" type="button" data-film="' + i + '" aria-label="' +
+              T.play + ' — ' + (f.couple || title).replace(/"/g, '') + '">' +
+            '<img src="' + poster + '" alt="" loading="lazy" decoding="async">' +
             '<span class="film-play" aria-hidden="true"></span>' +
           '</button>' +
-          '<figcaption><span>' + (f.couple || '') + '</span><span>' + place +
-            (f.len ? ' · ' + f.len : '') + '</span></figcaption>' +
-        '</figure>';
+          '<div class="film-words">' +
+            '<p class="eyebrow">' + title + '</p>' +
+            '<h3 class="h-md">' + (f.couple || '') + '</h3>' +
+            '<p class="film-text">' + text + '</p>' +
+            '<button class="btn film-cue" type="button" data-film="' + i + '">' + T.play + '</button>' +
+          '</div>' +
+        '</article>';
       }).join('');
+
+      var lastFilmFocus = null;
+      function srcFor(f) {
+        return f.type === 'drive'
+          ? 'https://drive.google.com/file/d/' + f.id + '/preview'
+          : 'https://www.youtube-nocookie.com/embed/' + f.id + '?autoplay=1&rel=0';
+      }
+      function openFilm(i) {
+        var f = films[i];
+        if (!f || !filmModal) return;
+        lastFilmFocus = doc.activeElement;
+        var holder = filmModal.querySelector('.film-modal-frame');
+        var cap = filmModal.querySelector('.film-modal-cap');
+        holder.innerHTML = '';
+        var fr = doc.createElement('iframe');
+        fr.src = srcFor(f);
+        fr.title = f.couple || 'Film';
+        fr.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
+        fr.setAttribute('allowfullscreen', '');
+        holder.appendChild(fr);
+        cap.textContent = (f.couple || '') + ((LANG === 'pl' ? f.titlePl : f.titleEn) ? '  ·  ' + (LANG === 'pl' ? f.titlePl : f.titleEn) : '');
+        filmModal.hidden = false;
+        doc.body.style.overflow = 'hidden';
+        filmModal.querySelector('.film-modal-close').focus();
+      }
+      function closeFilm() {
+        if (!filmModal || filmModal.hidden) return;
+        filmModal.querySelector('.film-modal-frame').innerHTML = '';  // stops playback
+        filmModal.hidden = true;
+        doc.body.style.overflow = '';
+        if (lastFilmFocus) lastFilmFocus.focus();
+      }
       filmWrap.addEventListener('click', function (e) {
-        var b = e.target.closest('[data-yt]');
-        if (!b) return;
-        var id = b.getAttribute('data-yt');
-        var f = doc.createElement('iframe');
-        f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
-        f.title = b.getAttribute('aria-label') || 'Film';
-        f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
-        f.allowFullscreen = true;
-        b.replaceWith(f);
+        var b = e.target.closest('[data-film]');
+        if (b) openFilm(parseInt(b.getAttribute('data-film'), 10));
       });
+      if (filmModal) {
+        filmModal.querySelector('.film-modal-close').addEventListener('click', closeFilm);
+        filmModal.addEventListener('click', function (e) { if (e.target === filmModal) closeFilm(); });
+        doc.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !filmModal.hidden) closeFilm();
+        });
+      }
     }
   }
 

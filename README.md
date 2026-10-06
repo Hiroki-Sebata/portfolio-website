@@ -27,16 +27,34 @@ python3 build.py
 
 ## Adding a film
 
-`docs/assets/js/films.js`. You only need the video ID — the part of the YouTube
-URL after `v=` or after `youtu.be/`:
+`docs/assets/js/films.js`. Each entry becomes one row on the Work page — poster
+on one side, your writing on the other, alternating sides down the page. Clicking
+the poster opens the film in a window over the site.
 
 ```js
-{ id: "XPw7D7KUssw", couple: "Monika & Julien", titleEn: "A Celebration of Love",
-  titlePl: "A Celebration of Love", len: "" },
+{
+  type: "youtube",            // or "drive"
+  id: "XPw7D7KUssw",          // YouTube: after v= or youtu.be/
+                              // Drive:   the id between /d/ and /view
+  poster: "mj",               // a file in docs/assets/img/film/  (without .jpg)
+  couple: "Monika & Julien",
+  titleEn: "A Celebration of Love", titlePl: "A Celebration of Love",
+  textEn: "...", textPl: "...",
+}
 ```
 
-Both languages read this one file. Films load only when someone presses play, so
-the page stays fast, and the embed uses `youtube-nocookie.com`.
+A poster should be 16:9 and about 1280px wide. For a Drive video you can usually
+grab one with
+`https://drive.google.com/thumbnail?id=THE_ID&sz=w1600`; otherwise crop a frame
+from that wedding's photographs.
+
+**Drive videos must be shared as "Anyone with the link"**, or the player shows
+nothing.
+
+**YouTube videos must have embedding switched on**, or the player shows
+*"Video unavailable — error 153"*. In YouTube Studio: Content → the video → Edit →
+scroll to **Show more** → tick **Allow embedding** → Save. It is off by default on
+some accounts.
 
 ## Adding a wedding
 

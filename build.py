@@ -407,6 +407,14 @@ def build(lang):
     </div>
   </section>
 
+  <div class="film-modal" id="film-modal" hidden role="dialog" aria-modal="true" aria-label="Film">
+    <button class="film-modal-close" type="button" aria-label="&#10005;">&#10005;</button>
+    <div class="film-modal-inner">
+      <div class="film-modal-frame"></div>
+      <p class="film-modal-cap"></p>
+    </div>
+  </div>
+
   <section class="section" data-panel="photo">
     <div class="wrap">
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;margin-bottom:clamp(20px,3vw,34px)">
