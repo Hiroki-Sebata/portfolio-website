@@ -69,6 +69,25 @@ HERO = ["ja-48", "nm-39", "na-5", "da-33"]
 STRIP = [("nm-28", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd")]
 CTA_IMG = {"index": "ja-59", "work": "nm-11", "about": "da-3", "offer": "na-10"}
 
+# Where to anchor a photograph when a wide screen crops it. A laptop window is
+# much wider than it is tall, so a portrait frame loses its top and bottom; with
+# the default centre anchor that cuts faces off. These pull the crop upwards.
+# Format: "horizontal vertical" — smaller vertical = more of the top kept.
+FOCUS_DEFAULT = "50% 20%"
+FOCUS = {
+    "ja-48": "50% 8%",    # extreme close-up; pull right up so the eyes stay in
+    "nm-39": "50% 20%",   # both heads in the upper third
+    "na-5":  "50% 18%",
+    "da-33": "50% 28%",   # bouquet and veil are the subject, not a face
+    "ja-59": "50% 42%",   # couple stand below a lot of sky
+    "nm-11": "50% 38%",
+    "da-3":  "50% 50%",   # flat-lay of shoes, nothing to cut off
+    "na-10": "55% 45%",   # candlelit couple sit centre-right
+}
+
+def focus(stem):
+    return FOCUS.get(stem, FOCUS_DEFAULT)
+
 def alt(stem, lang):
     key = stem.split("-")[0]
     name = album_name(key, lang).replace("&amp;", "&") if key in ALBUM_BY_KEY else ""
@@ -244,7 +263,7 @@ def cta_band(lang, page, base):
     c = COPY[lang]
     stem = CTA_IMG.get(page, "nm-11")
     return f"""  <section class="cta-band">
-    <img src="{base}assets/img/lg/{stem}.jpg" alt="" loading="lazy" decoding="async">
+    <img src="{base}assets/img/lg/{stem}.jpg" alt="" loading="lazy" decoding="async" style="object-position:{focus(stem)}">
     <div class="wrap">
       <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
       <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
@@ -275,7 +294,8 @@ def build(lang):
     # ---------------------------------------------------------------- home
     hero_imgs = "\n        ".join(
         f'<img src="@@assets/img/lg/{s}.jpg" alt="{alt(s, lang)}"'
-        + ('' if i == 0 else ' loading="lazy"') + ' decoding="async">'
+        + ('' if i == 0 else ' loading="lazy"')
+        + f' decoding="async" style="object-position:{focus(s)}">'
         for i, s in enumerate(HERO))
     strip = "\n        ".join(
         f'<figure><a href="{album_page(k)}" aria-label="{album_name(k, lang)}">'

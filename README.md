@@ -79,3 +79,18 @@ point at GitHub, which is done at the registrar (seohost), not here:
 | CNAME | www  | hiroki-sebata.github.io. |
 
 Delete any existing A record for `@` pointing somewhere else first.
+
+## Photo cropping on wide screens
+
+Hero and full-width band photographs are cropped by the browser to fill the
+space. A laptop window is far wider than it is tall, so a portrait frame loses
+its top and bottom — and with the default centre anchor that cuts faces off.
+
+`FOCUS` in `build.py` sets where each of those photographs is anchored:
+
+```python
+FOCUS = { "nm-39": "50% 20%" }   # horizontal, vertical — smaller = keep more of the top
+```
+
+Anything not listed uses `FOCUS_DEFAULT`. Phones are tall enough that there is
+little cropping, which is why the same photographs look complete there.
