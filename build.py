@@ -702,7 +702,10 @@ def sitemap():
         f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{body}\n</urlset>\n')
     open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8").write(
         f"User-agent: *\nAllow: /\nSitemap: https://{DOMAIN}/sitemap.xml\n")
-    open(os.path.join(OUT, "CNAME"), "w", encoding="utf-8").write(DOMAIN + "\n")
+    # GitHub's Pages settings screen rewrites this file without a trailing
+    # newline whenever the custom domain is re-saved. Match that, so rebuilding
+    # does not produce a pointless diff every time.
+    open(os.path.join(OUT, "CNAME"), "w", encoding="utf-8").write(DOMAIN)
     open(os.path.join(OUT, ".nojekyll"), "w").write("")
 
 
