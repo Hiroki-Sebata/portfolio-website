@@ -1,62 +1,81 @@
 # -*- coding: utf-8 -*-
-"""Generates the English (/) and Polish (/pl/) versions of hirokifilmuje.
-   Run:  python3 build.py"""
-import os, html, json
+"""Builds the Hiroki Filmuje site into docs/ (which is what GitHub Pages serves).
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+    python3 build.py
+
+Copy for both languages lives in copy.py. Photographs are read from
+docs/assets/img/ and grouped into albums by their filename prefix.
+"""
+import os, re, json, random
+from copy import COPY
+
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(SRC_DIR, "docs")
+
 BRAND = "Hiroki Filmuje"
 EMAIL = "sebasuta@gmail.com"
 PHONE_DISPLAY = "+48 516 849 121"
 PHONE_RAW = "+48516849121"
 INSTAGRAM = "https://www.instagram.com/hiroki_filmuje/"
 IG_HANDLE = "@hiroki_filmuje"
+DOMAIN = "hiroki-filmuje.pl"
 
 PAGES = ["index", "work", "about", "offer", "contact"]
-
 NAV = {
     "en": {"index": "Home", "work": "Work", "about": "About me", "offer": "Offer", "contact": "Contact"},
     "pl": {"index": "Start", "work": "Portfolio", "about": "O mnie", "offer": "Oferta", "contact": "Kontakt"},
 }
 TAG = {"en": "Wedding films &amp; photography", "pl": "Filmy i fotografia ślubna"}
 
-# ---------------------------------------------------------------- photographs
-# (file-stem, couple, orientation)
-COUPLES = {
-    "da": "Dominika &amp; Artur", "ja": "Julia &amp; Artsiom", "jd": "Julia &amp; Dominik",
-    "nm": "Nadia &amp; Miguel", "na": "Nastyja &amp; Anton", "uc": "",
-}
-GALLERY_BY_COUPLE = {
-    "da": ["da-29","da-31","da-9","da-12","da-20","da-26","da-3","da-32","da-34","da-39","da-42","da-23","da-11"],
-    "ja": ["ja-40","ja-29","ja-4","ja-59","ja-31","ja-35","ja-44","ja-46","ja-49","ja-51","ja-55","ja-62","ja-69","ja-70","ja-10","ja-12","ja-15","ja-2"],
-    "jd": ["jd-14","jd-13","jd-25","jd-20","jd-23","jd-3","jd-9","jd-10","jd-11","jd-17"],
-    "nm": ["nm-11","nm-19","nm-28","nm-30","nm-13","nm-15","nm-20","nm-25","nm-33","nm-37","nm-39","nm-42","nm-44"],
-    "na": ["na-10","na-3","na-8"],
-    "uc": ["uc-4","uc-5","uc-7"],
-}
+# ---------------------------------------------------------------- albums
+# prefix -> (file-slug, album page slug, display name EN, display name PL)
+ALBUMS = [
+    ("nm", "nadia-miguel",    "Nadia &amp; Miguel",    "Nadia &amp; Miguel"),
+    ("na", "nastyja-anton",   "Nastyja &amp; Anton",   "Nastyja &amp; Anton"),
+    ("da", "dominika-artur",  "Dominika &amp; Artur",  "Dominika &amp; Artur"),
+    ("jd", "julia-dominik",   "Julia &amp; Dominik",   "Julia &amp; Dominik"),
+    ("ja", "julia-artsiom",   "Julia &amp; Artsiom",   "Julia &amp; Artsiom"),
+    ("uc", "wesele",          "A wedding",             "Wesele"),
+]
+ALBUM_BY_KEY = {a[0]: a for a in ALBUMS}
 
-def interleave(groups):
-    """Round-robin so two frames from the same wedding never sit side by side."""
-    out, keys, idx = [], list(groups.keys()), {k: 0 for k in groups}
-    while True:
-        placed = False
-        for k in keys:
-            if idx[k] < len(groups[k]):
-                out.append((groups[k][idx[k]], k)); idx[k] += 1; placed = True
-        if not placed:
-            return out
+def album_name(key, lang):
+    a = ALBUM_BY_KEY[key]
+    return a[2] if lang == "en" else a[3]
 
-GALLERY = interleave(GALLERY_BY_COUPLE)
+def album_page(key):
+    return "album-" + ALBUM_BY_KEY[key][1] + ".html"
 
-HERO = ["da-29", "ja-40", "na-10", "nm-11"]           # four different weddings
-STRIP = [("da-9","da"),("ja-29","ja"),("jd-14","jd"),("nm-28","nm"),("na-8","na"),("da-34","da")]
+def photos_for(key):
+    """Every exported photograph for one wedding, in natural number order."""
+    d = os.path.join(OUT, "assets/img/md")
+    out = []
+    for f in os.listdir(d):
+        m = re.match(r"^" + key + r"-(\d+)\.jpg$", f)
+        if m:
+            out.append((int(m.group(1)), f[:-4]))
+    return [s for _, s in sorted(out)]
+
+PHOTOS = {k: photos_for(k) for k, *_ in ALBUMS}
+
+# One shuffled run of every photograph, for the Work page. Seeded so the order
+# is mixed but identical on every rebuild (no churn in git, no layout jumping).
+ALL_SHUFFLED = [(s, k) for k in PHOTOS for s in PHOTOS[k]]
+random.Random(20261006).shuffle(ALL_SHUFFLED)
+
+# ---------------------------------------------------------------- picks
+HERO = ["ja-48", "nm-39", "na-5", "da-33"]
+# home strip: one frame per wedding, in the order you asked for, each linking to its album
+STRIP = [("nm-28", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd")]
+CTA_IMG = {"index": "ja-59", "work": "nm-11", "about": "da-3", "offer": "na-10"}
 
 def alt(stem, lang):
-    c = COUPLES.get(stem.split("-")[0], "")
+    key = stem.split("-")[0]
+    name = album_name(key, lang).replace("&amp;", "&") if key in ALBUM_BY_KEY else ""
     if lang == "pl":
-        return ("Kadr ze ślubu — " + c) if c else "Kadr ze ślubu"
-    return ("Wedding photograph — " + c) if c else "Wedding photograph"
+        return ("Fotografia ślubna — " + name) if name else "Fotografia ślubna"
+    return ("Wedding photograph — " + name) if name else "Wedding photograph"
 
-# ---------------------------------------------------------------- testimonials
 QUOTES = [
     {"who": "Barbara &amp; Michał",
      "pl": "Omg, to jest niesamowiteeee! Płakaliśmy, oglądając to. Piękny film. Zatwierdzone!!! Naprawdę wykonałeś najlepszą robotę.",
@@ -69,7 +88,6 @@ QUOTES = [
      "en": "Great to work with, professional, and a good atmosphere all day. The photos and films came out brilliant."},
 ]
 
-# ---------------------------------------------------------------- packages
 PACKS = [
   {"n": "1", "price": "3 000 zł", "featured": False,
    "pl": {"name": "Klasyczny", "len": "Film 3–5 minut", "tag": "",
@@ -89,11 +107,7 @@ PACKS = [
 ]
 
 # ================================================================= chrome
-def head(lang, page, title, desc):
-    other = "pl" if lang == "en" else "en"
-    base = "" if lang == "en" else "../"
-    url_self = ("" if lang == "en" else "pl/") + page + ".html"
-    url_other = ("pl/" if lang == "en" else "") + page + ".html"
+def head(lang, page, title, desc, base):
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -104,7 +118,7 @@ def head(lang, page, title, desc):
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="{base}assets/img/lg/da-29.jpg">
+<meta property="og:image" content="https://{DOMAIN}/assets/img/lg/{HERO[0]}.jpg">
 <meta name="theme-color" content="#0c0e0d">
 <link rel="icon" href="{base}assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -114,56 +128,63 @@ def head(lang, page, title, desc):
 </head>
 <body>"""
 
-def header(lang, page):
-    base = "" if lang == "en" else "../"
+def header(lang, page, base):
     nav = NAV[lang]
+    cur = page if page in PAGES else "work"
     inline = "\n          ".join(
-        f'<a href="{p}.html"{" aria-current=\"page\"" if p == page else ""}>{nav[p]}</a>'
+        '<a href="%s.html"%s>%s</a>' % (p, ' aria-current="page"' if p == cur else '', nav[p])
         for p in PAGES if p != "contact")
-    drawer_links = "\n        ".join(f'<a href="{p}.html">{nav[p]}</a>' for p in PAGES)
-    en_href = ("../" if lang == "pl" else "") + page + ".html"
-    pl_href = ("" if lang == "pl" else "pl/") + page + ".html"
+    drawer_links = "\n        ".join('<a href="%s.html">%s</a>' % (p, nav[p]) for p in PAGES)
+    target = page if page in PAGES else "work"
+    en_href = ("../" if lang == "pl" else "") + target + ".html"
+    pl_href = ("" if lang == "pl" else "pl/") + target + ".html"
     skip = "Skip to content" if lang == "en" else "Przejdź do treści"
-    menu = "Menu"
     close = "Close" if lang == "en" else "Zamknij"
-    cta = NAV[lang]["contact"]
-    return f"""<a class="skip" href="#main">{skip}</a>
+    tpl = """<a class="skip" href="#main">{skip}</a>
 <header class="site-head">
   <div class="wrap site-head-in">
-    <a class="brand" href="index.html">{BRAND}<small>{TAG[lang]}</small></a>
+    <a class="brand" href="index.html">{brand}<small>{tagline}</small></a>
     <div class="head-right">
-      <nav class="nav-inline" aria-label="{menu}">
+      <nav class="nav-inline" aria-label="Menu">
           {inline}
       </nav>
       <span class="lang">
-        <a href="{pl_href}" hreflang="pl"{' aria-current="true"' if lang=="pl" else ''}>PL</a><i>/</i><a href="{en_href}" hreflang="en"{' aria-current="true"' if lang=="en" else ''}>EN</a>
+        <a href="{pl_href}" hreflang="pl"{pl_cur}>PL</a><i>/</i><a href="{en_href}" hreflang="en"{en_cur}>EN</a>
       </span>
       <a class="btn" href="contact.html">{cta}</a>
-      <button class="menu-btn" type="button" data-drawer-open aria-controls="drawer" aria-label="{menu}"><i></i><i></i></button>
+      <button class="menu-btn" type="button" data-drawer-open aria-controls="drawer" aria-label="Menu"><i></i><i></i></button>
     </div>
   </div>
 </header>
 
-<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="{menu}" data-open="false">
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu" data-open="false">
   <div class="drawer-pane">
     <div class="drawer-top">
-      <span class="eyebrow">{BRAND}</span>
+      <span class="eyebrow">{brand}</span>
       <button class="drawer-close" type="button" data-drawer-close>{close}</button>
     </div>
-    <nav class="drawer-nav" aria-label="{menu}">
+    <nav class="drawer-nav" aria-label="Menu">
         {drawer_links}
     </nav>
     <div class="drawer-meta">
-      <a href="mailto:{EMAIL}">{EMAIL}</a>
-      <a href="tel:{PHONE_RAW}">{PHONE_DISPLAY}</a>
-      <a href="{INSTAGRAM}" target="_blank" rel="noopener">Instagram {IG_HANDLE}</a>
+      <a href="mailto:{email}">{email}</a>
+      <a href="tel:{phone_raw}">{phone}</a>
+      <a href="{ig}" target="_blank" rel="noopener">Instagram {ig_handle}</a>
     </div>
   </div>
-  <div class="drawer-art"><img src="{base}assets/img/md/ja-40.jpg" alt="" loading="lazy"></div>
+  <div class="drawer-art"><img src="{base}assets/img/md/{drawer_img}.jpg" alt="" loading="lazy"></div>
 </div>"""
+    return tpl.format(
+        skip=skip, brand=BRAND, tagline=TAG[lang], inline=inline,
+        pl_href=pl_href, en_href=en_href,
+        pl_cur=' aria-current="true"' if lang == "pl" else "",
+        en_cur=' aria-current="true"' if lang == "en" else "",
+        cta=nav["contact"], close=close, drawer_links=drawer_links,
+        email=EMAIL, phone_raw=PHONE_RAW, phone=PHONE_DISPLAY,
+        ig=INSTAGRAM, ig_handle=IG_HANDLE, base=base, drawer_img=HERO[1])
 
-def footer(lang):
-    base = "" if lang == "en" else "../"
+
+def footer(lang, base):
     nav = NAV[lang]
     links = "\n            ".join(f'<li><a href="{p}.html">{nav[p]}</a></li>' for p in PAGES)
     if lang == "pl":
@@ -209,229 +230,58 @@ def footer(lang):
 </html>
 """
 
+def lightbox(lang):
+    label = "Zdjęcia" if lang == "pl" else "Photographs"
+    return f"""  <div class="lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="{label}">
+    <button class="lb-btn lb-close" type="button" aria-label="&#10005;">&#10005;</button>
+    <button class="lb-btn lb-prev" type="button" aria-label="&#8592;">&#8592;</button>
+    <button class="lb-btn lb-next" type="button" aria-label="&#8594;">&#8594;</button>
+    <img src="" alt="">
+    <p class="lb-cap"></p>
+  </div>"""
+
+def cta_band(lang, page, base):
+    c = COPY[lang]
+    stem = CTA_IMG.get(page, "nm-11")
+    return f"""  <section class="cta-band">
+    <img src="{base}assets/img/lg/{stem}.jpg" alt="" loading="lazy" decoding="async">
+    <div class="wrap">
+      <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
+      <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
+    </div>
+  </section>"""
+
 def write(lang, page, title, desc, body):
     base = "" if lang == "en" else "../"
-    out = head(lang, page, title, desc) + "\n" + header(lang, page) + \
-          '\n<main id="main">\n' + body.replace("@@", base) + "\n</main>\n" + footer(lang)
-    d = ROOT if lang == "en" else os.path.join(ROOT, "pl")
+    out = (head(lang, page, title, desc, base) + "\n" + header(lang, page, base) +
+           '\n<main id="main">\n' + body.replace("@@", base) + "\n</main>\n" + footer(lang, base))
+    d = OUT if lang == "en" else os.path.join(OUT, "pl")
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, page + ".html"), "w", encoding="utf-8").write(out)
 
-
-# ================================================================= content
-COPY = {
- "en": {
-  "home_title": "Hiroki Filmuje — wedding films and photography",
-  "home_desc": "Wedding films and photography. One person, the whole day, no posing drills. Films ready within 14 days.",
-  "hero_eyebrow": "Wedding films &amp; photography",
-  "hero_h1": 'The day as it<br><span class="ital">actually</span> happened',
-  "hero_lede": "I work alone, quietly, with a camera in my hands all day. No posing drills — your wedding, kept the way it felt.",
-  "hero_cta1": "Check your date", "hero_cta2": "See the work",
-  "s1_rail1": "01 — Approach", "s1_rail2": "Solo",
-  "s1_h": "One person, one eye, the whole day.",
-  "s1_p1": "Working solo means the film and the photographs come from the same pair of eyes. The colour, the rhythm, the moments I go after — all of it stays consistent from the first frame to the last.",
-  "s1_p2": "I stay out of the way. Wide and quiet for most of the day, close only when something is happening that deserves it. The one thing I ask for is a short walk near golden hour.",
-  "spec": [("Coverage","Film and photography"),("Crew","Solo"),("Film ready","Within 14 days"),("Delivery","WeTransfer or Google Drive")],
-  "s2_rail1": "02 — Selected", "s2_rail2": "Recent",
-  "s2_h": "Frames from recent weddings", "s2_btn": "Full portfolio",
-  "strip_note": "Drag or scroll sideways",
-  "s3_eyebrow": "03 — Behind the camera",
-  "s3_h": "Hi, I'm Hiroki.",
-  "s3_p1": "I film and photograph weddings in Poland. I came to this work because I like watching people forget the camera is there — and because a wedding is one of the few days when everyone in the room is telling the truth.",
-  "s3_p2": "I cover the whole day myself: the preparations, the ceremony, the party until the dance floor finds its level. Then I cut it into a film you will actually rewatch.",
-  "s3_btn": "More about me",
-  "s4_eyebrow": "04 — In their words",
-  "quote_note": "Translated from the original Polish messages.",
-  "cta_h": "Dates book well ahead. Tell me when and where.",
-  "cta_btn": "Start an enquiry",
-
-  "work_title": "Work — Hiroki Filmuje",
-  "work_desc": "Wedding films and photographs from recent weddings.",
-  "work_h1": "Work",
-  "work_lede": "Films and photographs from recent weddings. Press any photograph to open it full size.",
-  "tab_all": "Everything", "tab_film": "Films", "tab_photo": "Photographs",
-  "films_h": "Films", "photos_h": "Photographs",
-  "work_rail1": "Portfolio", "work_rail2": "Film &amp; stills",
-
-  "about_title": "About me — Hiroki Filmuje",
-  "about_desc": "Hiroki Filmuje — wedding filmmaker and photographer working solo across Poland.",
-  "about_h1": "About me",
-  "about_eyebrow": "Behind the camera",
-  "about_lede": "I'm Hiroki. I film and photograph weddings, and I do both myself.",
-  "about_p1": "Working solo is a deliberate choice, not a limitation. One person carrying both the camera and the stills means the film and the photographs share a look: the same colour, the same instinct about when to step closer and when to leave people alone.",
-  "about_p2": "I am not interested in a wedding that has been arranged for the lens. The parts worth keeping tend to happen on their own — someone's father going quiet during the speeches, the half-second before a first dance starts, a room that has been laughing for an hour and does not realise it. My job is to be there for those, and to be unobtrusive enough that they still happen.",
-  "about_p3": "In practice that means I am there from the preparations through to the dancing. I shoot in the light the day gives me. I ask for one short walk near golden hour, and that is the only part of the day I will direct.",
-  "about_p4": "Afterwards I edit everything myself. The film is with you within 14 days, delivered as a download link over WeTransfer or Google Drive.",
-  "about_steps_h": "How a day runs",
-  "about_steps": [
-    ("A message and a call", "Tell me the date and the place. We talk for twenty minutes about how the day is shaped — no sales pitch."),
-    ("The date is held", "A signed agreement and a 30% deposit take the date out of the calendar."),
-    ("The wedding day", "I arrive during the preparations and stay through the ceremony and the reception. One short portrait walk, timed to the light."),
-    ("Edit and delivery", "I cut, grade and finish the film myself. It reaches you within 14 days by WeTransfer or Google Drive."),
-  ],
-
-  "offer_title": "Offer — Hiroki Filmuje",
-  "offer_desc": "Wedding film packages from 3 000 zł. Highlight films, full-day coverage, drone, Instagram Reel.",
-  "offer_h1": "Offer",
-  "offer_lede": "Three film packages. Every one of them is shot, edited and graded by me.",
-  "offer_rail1": "Packages", "offer_rail2": "Prices in zł",
-  "extras_h": "Extras",
-  "extras": [("Drone", "+500 zł — aerial shots cut into the final film"),
-             ("Additional outdoor session", "Quoted individually")],
-  "general_h": "The practical part",
-  "general": [("Crew","I work solo — one consistent style across the whole film"),
-              ("Turnaround","Finished film within 14 days of the wedding"),
-              ("Delivery","Download link via WeTransfer or Google Drive"),
-              ("Travel","Depends on the distance — ask me for a figure")],
-  "pay_h": "Payment",
-  "pay_intro": "Cash, in three parts:",
-  "pay": [("30%","On signing the agreement — this reserves your date"),
-          ("50%","On the wedding day"),
-          ("20%","After the finished film is delivered")],
-  "offer_close": "Happy to send more examples of my work or answer anything that is not covered here.",
-
-  "contact_title": "Contact — Hiroki Filmuje",
-  "contact_desc": "Enquire about your wedding date. Email sebasuta@gmail.com or +48 516 849 121.",
-  "contact_h1": "Let's talk",
-  "contact_lede": "The date and the place are enough to start. Everything else we can work out on a call.",
-  "contact_rail1": "Enquire", "contact_rail2": "Usually a reply within 2 days",
-  "f_name": "Your names", "f_name_ph": "both of you, if you like",
-  "f_email": "Email", "f_email_ph": "where I should reply",
-  "f_date": "Wedding date", "f_date_note": "Leave blank if it is not fixed yet",
-  "f_place": "Where", "f_place_ph": "venue, town, or just the region",
-  "f_cov": "What you are after",
-  "f_cov_opts": ["Choose one","Film only","Film and photography","Photography only","Not sure yet"],
-  "f_notes": "Anything else", "f_notes_ph": "How the day runs, what matters most, anything you are worried about.",
-  "f_send": "Prepare my enquiry",
-  "form_note": "This form does not send email on its own. It checks what you have written and lays it out so you can copy it into a message — the address is just below.",
-  "direct_h": "Or reach me directly",
-  "l_email": "Email", "l_phone": "Phone", "l_ig": "Instagram",
-  "copy": "Copy",
-  "faq_h": "Before you ask",
-  "faq": [
-    ("How far do you travel?", "Travel is quoted according to distance, so tell me where the wedding is and I will give you a figure with the package price."),
-    ("How long until we get the film?", "Within 14 days of the wedding. You get a download link over WeTransfer or Google Drive."),
-    ("Do you work alone?", "Yes. One person for the film and the photographs, which is what keeps the style consistent across the whole day."),
-    ("Can we choose the music?", "Yes — one song of your choice is part of every package."),
-    ("How do we book?", "A signed agreement and a 30% deposit reserve the date. 50% is paid on the wedding day and the last 20% once the finished film is delivered."),
-  ],
- },
-
- "pl": {
-  "home_title": "Hiroki Filmuje — filmy i fotografia ślubna",
-  "home_desc": "Filmy i fotografia ślubna. Jedna osoba, cały dzień, bez sztucznego pozowania. Gotowy film do 14 dni.",
-  "hero_eyebrow": "Filmy i fotografia ślubna",
-  "hero_h1": 'Dzień taki,<br>jaki był <span class="ital">naprawdę</span>',
-  "hero_lede": "Pracuję sam, po cichu, z aparatem w ręku przez cały dzień. Bez sztucznego pozowania — zostaje Wasz ślub taki, jaki był.",
-  "hero_cta1": "Sprawdź termin", "hero_cta2": "Zobacz prace",
-  "s1_rail1": "01 — Podejście", "s1_rail2": "Solo",
-  "s1_h": "Jedna osoba, jedno spojrzenie, cały dzień.",
-  "s1_p1": "Pracuję solo, więc film i zdjęcia powstają z tej samej perspektywy. Kolor, rytm, wyłapywane momenty — wszystko jest spójne od pierwszego do ostatniego kadru.",
-  "s1_p2": "Nie wchodzę w drogę. Przez większość dnia jestem z boku, podchodzę bliżej tylko wtedy, gdy dzieje się coś, co na to zasługuje. Proszę jedynie o krótki spacer o złotej godzinie.",
-  "spec": [("Zakres","Film i fotografia"),("Obsada","Solo"),("Gotowy film","Do 14 dni"),("Dostawa","WeTransfer lub Google Drive")],
-  "s2_rail1": "02 — Wybrane", "s2_rail2": "Ostatnie",
-  "s2_h": "Kadry z ostatnich ślubów", "s2_btn": "Całe portfolio",
-  "strip_note": "Przeciągnij lub przewiń w bok",
-  "s3_eyebrow": "03 — Za kamerą",
-  "s3_h": "Cześć, jestem Hiroki.",
-  "s3_p1": "Filmuję i fotografuję śluby w Polsce. Zajmuję się tym, bo lubię patrzeć, jak ludzie zapominają o kamerze — i dlatego, że ślub jest jednym z niewielu dni, kiedy wszyscy na sali są prawdziwi.",
-  "s3_p2": "Cały dzień obsługuję sam: przygotowania, ceremonię i wesele, aż parkiet złapie swój rytm. Potem montuję z tego film, do którego naprawdę się wraca.",
-  "s3_btn": "Poznaj mnie",
-  "s4_eyebrow": "04 — Opinie",
-  "quote_note": "Oryginalne wiadomości od par młodych.",
-  "cta_h": "Terminy rezerwują się z dużym wyprzedzeniem. Napiszcie, kiedy i gdzie.",
-  "cta_btn": "Napisz do mnie",
-
-  "work_title": "Portfolio — Hiroki Filmuje",
-  "work_desc": "Filmy i zdjęcia z ostatnich ślubów.",
-  "work_h1": "Portfolio",
-  "work_lede": "Filmy i zdjęcia z ostatnich ślubów. Kliknijcie zdjęcie, aby otworzyć je w pełnym rozmiarze.",
-  "tab_all": "Wszystko", "tab_film": "Filmy", "tab_photo": "Zdjęcia",
-  "films_h": "Filmy", "photos_h": "Zdjęcia",
-  "work_rail1": "Portfolio", "work_rail2": "Film i zdjęcia",
-
-  "about_title": "O mnie — Hiroki Filmuje",
-  "about_desc": "Hiroki Filmuje — filmy i fotografia ślubna. Pracuję solo, w całej Polsce.",
-  "about_h1": "O mnie",
-  "about_eyebrow": "Za kamerą",
-  "about_lede": "Jestem Hiroki. Filmuję i fotografuję śluby — jedno i drugie robię osobiście.",
-  "about_p1": "Praca solo to świadomy wybór, nie ograniczenie. Jedna osoba z kamerą i aparatem oznacza, że film i zdjęcia mają ten sam charakter: ten sam kolor i to samo wyczucie, kiedy podejść bliżej, a kiedy zostawić ludziom przestrzeń.",
-  "about_p2": "Nie interesuje mnie ślub ustawiony pod obiektyw. To, co warto zatrzymać, dzieje się samo — tata, który milknie w trakcie przemówienia, pół sekundy przed pierwszym tańcem, sala, która śmieje się od godziny i nawet tego nie zauważa. Moim zadaniem jest przy tym być i nie przeszkadzać, żeby to dalej się działo.",
-  "about_p3": "W praktyce jestem z Wami od przygotowań aż po tańce. Pracuję w świetle, które daje dzień. Proszę o jeden krótki spacer o złotej godzinie — i to jedyny moment, który reżyseruję.",
-  "about_p4": "Całość montuję sam. Gotowy film trafia do Was w ciągu 14 dni, jako link do pobrania przez WeTransfer lub Google Drive.",
-  "about_steps_h": "Jak wygląda współpraca",
-  "about_steps": [
-    ("Wiadomość i rozmowa", "Napiszcie termin i miejsce. Rozmawiamy dwadzieścia minut o tym, jak wygląda Wasz dzień — bez sprzedażowego gadania."),
-    ("Rezerwacja terminu", "Podpisana umowa i 30% zaliczki blokują termin w kalendarzu."),
-    ("Dzień ślubu", "Przyjeżdżam na przygotowania i zostaję przez ceremonię i wesele. Jeden krótki plener, dopasowany do światła."),
-    ("Montaż i dostawa", "Montuję, koloruję i kończę film osobiście. Dostajecie go do 14 dni przez WeTransfer lub Google Drive."),
-  ],
-
-  "offer_title": "Oferta — Hiroki Filmuje",
-  "offer_desc": "Pakiety filmów ślubnych od 3 000 zł. Highlight, pełny dzień, dron, Reel na Instagram.",
-  "offer_h1": "Oferta",
-  "offer_lede": "Trzy pakiety filmowe. Każdy z nich nagrywam, montuję i koloruję osobiście.",
-  "offer_rail1": "Pakiety", "offer_rail2": "Ceny w zł",
-  "extras_h": "Dodatki",
-  "extras": [("Dron", "+500 zł — ujęcia lotnicze zmontowane w finalny film"),
-             ("Dodatkowa sesja plenerowa", "Wycena indywidualna")],
-  "general_h": "Informacje ogólne",
-  "general": [("Obsada","Pracuję solo — pełna spójność stylu i estetyki przez cały film"),
-              ("Czas realizacji","Gotowy film do 14 dni od ślubu"),
-              ("Forma dostawy","Link do pobrania przez WeTransfer lub Google Drive"),
-              ("Dojazd","Zależny od odległości — napiszcie, gdzie się odbywa ślub")],
-  "pay_h": "Płatność",
-  "pay_intro": "Gotówka, w trzech częściach:",
-  "pay": [("30%","Przy podpisaniu umowy — rezerwacja terminu"),
-          ("50%","W dniu ślubu"),
-          ("20%","Po dostarczeniu gotowego materiału")],
-  "offer_close": "Chętnie prześlę przykłady mojej pracy lub odpowiem na dodatkowe pytania.",
-
-  "contact_title": "Kontakt — Hiroki Filmuje",
-  "contact_desc": "Zapytaj o termin. E-mail sebasuta@gmail.com lub +48 516 849 121.",
-  "contact_h1": "Napiszcie do mnie",
-  "contact_lede": "Termin i miejsce w zupełności wystarczą na początek. Resztę ustalimy na rozmowie.",
-  "contact_rail1": "Kontakt", "contact_rail2": "Odpowiadam zwykle w 2 dni",
-  "f_name": "Wasze imiona", "f_name_ph": "najlepiej oboje",
-  "f_email": "E-mail", "f_email_ph": "adres, na który mam odpowiedzieć",
-  "f_date": "Data ślubu", "f_date_note": "Zostawcie puste, jeśli termin nie jest jeszcze ustalony",
-  "f_place": "Miejsce", "f_place_ph": "sala, miasto albo sam region",
-  "f_cov": "Czego potrzebujecie",
-  "f_cov_opts": ["Wybierzcie","Tylko film","Film i zdjęcia","Tylko zdjęcia","Jeszcze nie wiemy"],
-  "f_notes": "Coś jeszcze", "f_notes_ph": "Jak wygląda dzień, co jest dla Was najważniejsze, o co się martwicie.",
-  "f_send": "Przygotuj zapytanie",
-  "form_note": "Ten formularz nie wysyła wiadomości samodzielnie. Sprawdza to, co wpisaliście, i układa w gotowy tekst do skopiowania — adres e-mail znajdziecie niżej.",
-  "direct_h": "Albo bezpośrednio",
-  "l_email": "E-mail", "l_phone": "Telefon", "l_ig": "Instagram",
-  "copy": "Kopiuj",
-  "faq_h": "Zanim zapytacie",
-  "faq": [
-    ("Jak daleko dojeżdżasz?", "Dojazd wyceniam według odległości — napiszcie, gdzie odbywa się ślub, a podam kwotę razem z ceną pakietu."),
-    ("Kiedy dostaniemy film?", "Do 14 dni od ślubu. Dostajecie link do pobrania przez WeTransfer lub Google Drive."),
-    ("Pracujesz sam?", "Tak. Jedna osoba do filmu i do zdjęć — dzięki temu całość jest spójna stylistycznie."),
-    ("Czy możemy wybrać muzykę?", "Tak — jedna piosenka według Waszego wyboru wchodzi w skład każdego pakietu."),
-    ("Jak zarezerwować termin?", "Podpisana umowa i 30% zaliczki rezerwują termin. 50% płatne w dniu ślubu, ostatnie 20% po dostarczeniu gotowego filmu."),
-  ],
- },
-}
-
 # ================================================================= pages
-def img(stem, size, lang, cls="", lazy=True, sizes=""):
-    return (f'<img src="@@assets/img/{size}/{stem}.jpg" alt="{alt(stem, lang)}"'
-            f'{" loading=\"lazy\"" if lazy else ""} decoding="async"{cls}>')
+def fig(stem, key, lang, with_caption=True):
+    """One gallery tile. data-album scopes the lightbox to that wedding."""
+    name = album_name(key, lang)
+    cap = f'<figcaption>{name}</figcaption>' if (with_caption and name) else ''
+    return (f'<figure><button type="button" data-full="@@assets/img/lg/{stem}.jpg" '
+            f'data-album="{key}" data-cap="{name}">'
+            f'<img src="@@assets/img/md/{stem}.jpg" alt="{alt(stem, lang)}" loading="lazy" decoding="async">'
+            f'</button>{cap}</figure>')
 
 def build(lang):
     c = COPY[lang]
-    nav = NAV[lang]
 
     # ---------------------------------------------------------------- home
     hero_imgs = "\n        ".join(
         f'<img src="@@assets/img/lg/{s}.jpg" alt="{alt(s, lang)}"'
-        f'{"" if i == 0 else " loading=\"lazy\""} decoding="async">' for i, s in enumerate(HERO))
+        + ('' if i == 0 else ' loading="lazy"') + ' decoding="async">'
+        for i, s in enumerate(HERO))
     strip = "\n        ".join(
-        f'<figure><div class="ph r45">{img(s,"md",lang)}</div>'
-        f'<figcaption><span>{COUPLES[k] or ""}</span><span>{i+1:02d}</span></figcaption></figure>'
-        for i, (s, k) in enumerate(STRIP))
+        f'<figure><a href="{album_page(k)}" aria-label="{album_name(k, lang)}">'
+        f'<div class="ph r45"><img src="@@assets/img/md/{s}.jpg" alt="{alt(s, lang)}" loading="lazy" decoding="async"></div>'
+        f'<figcaption><span>{album_name(k, lang)}</span><span>{len(PHOTOS[k])} {c["photos_count"]}</span></figcaption>'
+        f'</a></figure>' for s, k in STRIP)
     specs = "\n            ".join(f'<li><span>{a}</span><span>{b}</span></li>' for a, b in c["spec"])
     quotes = "\n          ".join(
         f'<div class="quote"><blockquote>{q[lang]}</blockquote><cite>{q["who"]}</cite></div>' for q in QUOTES)
@@ -475,10 +325,10 @@ def build(lang):
         </div>
       </div>
     </div>
-    <div class="strip" data-strip>
+    <div class="strip strip-links" data-strip>
         {strip}
     </div>
-    <div class="wrap"><p class="field-note" style="margin-top:14px">{c["strip_note"]}</p></div>
+    <div class="wrap"><p class="field-note" style="margin-top:14px">{c["work_album_hint"]}</p></div>
   </section>
 
   <section class="section">
@@ -508,21 +358,13 @@ def build(lang):
     </div>
   </section>
 
-  <section class="cta-band">
-    <img src="@@assets/img/lg/ja-59.jpg" alt="" loading="lazy" decoding="async">
-    <div class="wrap">
-      <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
-      <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
-    </div>
-  </section>"""
+{cta_band(lang, "index", "@@")}"""
     write(lang, "index", c["home_title"], c["home_desc"], home)
 
     # ---------------------------------------------------------------- work
-    gal = "\n        ".join(
-        f'<figure><button type="button" data-full="@@assets/img/lg/{s}.jpg" data-cap="{COUPLES[k] or ""}">'
-        f'{img(s,"md",lang)}</button>'
-        + (f'<figcaption>{COUPLES[k]}</figcaption>' if COUPLES[k] else '')
-        + '</figure>' for s, k in GALLERY)
+    gal = "\n        ".join(fig(s, k, lang) for s, k in ALL_SHUFFLED)
+    album_links = "\n          ".join(
+        f'<a class="btn btn-sm" href="{album_page(k)}">{album_name(k, lang)}</a>' for k, *_ in ALBUMS)
     work = f"""  <section class="section">
     <div class="wrap railed">
       <div class="rail"><span>{c["work_rail1"]}</span><span>{c["work_rail2"]}</span></div>
@@ -547,33 +389,73 @@ def build(lang):
 
   <section class="section" data-panel="photo">
     <div class="wrap">
-      <h2 class="h-md" style="margin-bottom:clamp(22px,3vw,38px)">{c["photos_h"]}</h2>
-      <div class="gallery" data-gallery>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:baseline;justify-content:space-between;margin-bottom:clamp(20px,3vw,34px)">
+        <h2 class="h-md">{c["photos_h"]}</h2>
+        <p class="field-note" style="margin:0">{c["work_album_hint"]}</p>
+      </div>
+      <div class="album-links">
+          {album_links}
+      </div>
+      <div class="gallery" data-gallery style="margin-top:clamp(22px,3vw,38px)">
         {gal}
       </div>
     </div>
   </section>
 
-  <div class="lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="{c["photos_h"]}">
-    <button class="lb-btn lb-close" type="button" aria-label="&#10005;">&#10005;</button>
-    <button class="lb-btn lb-prev" type="button" aria-label="&#8592;">&#8592;</button>
-    <button class="lb-btn lb-next" type="button" aria-label="&#8594;">&#8594;</button>
-    <img src="" alt="">
-    <p class="lb-cap"></p>
-  </div>
+{lightbox(lang)}
 
-  <section class="cta-band">
-    <img src="@@assets/img/lg/nm-11.jpg" alt="" loading="lazy" decoding="async">
-    <div class="wrap">
-      <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
-      <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
-    </div>
-  </section>"""
+{cta_band(lang, "work", "@@")}"""
     write(lang, "work", c["work_title"], c["work_desc"], work)
 
+    # ---------------------------------------------------------------- albums
+    for key, slug, *_ in ALBUMS:
+        name = album_name(key, lang)
+        shots = PHOTOS[key]
+        tiles = "\n        ".join(fig(s, key, lang, with_caption=False) for s in shots)
+        others = "\n          ".join(
+            f'<a class="btn btn-sm" href="{album_page(k)}">{album_name(k, lang)}</a>'
+            for k, *_ in ALBUMS if k != key)
+        plain = name.replace("&amp;", "&")
+        body = f"""  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>{c["album_eyebrow"]}</span><span>{len(shots)} {c["photos_count"]}</span></div>
+      <div>
+        <p class="eyebrow"><a href="work.html" style="text-decoration:none">&#8592; {c["album_back"]}</a></p>
+        <h1 class="h-xl" style="margin-top:.5em">{name}</h1>
+        <p class="lede dim" style="max-width:44ch;margin-top:1em">{c["album_lede"]}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="gallery" data-gallery>
+        {tiles}
+      </div>
+    </div>
+  </section>
+
+{lightbox(lang)}
+
+  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>{c["albums_h"]}</span></div>
+      <div>
+        <h2 class="h-lg">{c["albums_h"]}</h2>
+        <div class="album-links" style="margin-top:1.6em">
+          {others}
+        </div>
+      </div>
+    </div>
+  </section>
+
+{cta_band(lang, "album", "@@")}"""
+        title = f"{plain} — {BRAND}"
+        desc = (f"Zdjęcia ślubne — {plain}." if lang == "pl" else f"Wedding photographs — {plain}.")
+        write(lang, "album-" + slug, title, desc, body)
+
     # ---------------------------------------------------------------- about
-    steps = "\n          ".join(
-        f'<li><h3>{t}</h3><p>{p}</p></li>' for t, p in c["about_steps"])
+    steps = "\n          ".join(f'<li><h3>{t}</h3><p>{p}</p></li>' for t, p in c["about_steps"])
     about = f"""  <section class="section">
     <div class="wrap split">
       <div>
@@ -596,8 +478,8 @@ def build(lang):
 
   <section class="section">
     <div class="wrap grid g2">
-      <div class="ph r32 reveal">{img("da-39","md",lang)}</div>
-      <div class="ph r32 reveal offset">{img("nm-30","md",lang)}</div>
+      <div class="ph r32 reveal"><img src="@@assets/img/md/da-39.jpg" alt="{alt("da-39", lang)}" loading="lazy" decoding="async"></div>
+      <div class="ph r32 reveal offset"><img src="@@assets/img/md/nm-30.jpg" alt="{alt("nm-30", lang)}" loading="lazy" decoding="async"></div>
     </div>
   </section>
 
@@ -613,23 +495,15 @@ def build(lang):
     </div>
   </section>
 
-  <section class="cta-band">
-    <img src="@@assets/img/lg/jd-14.jpg" alt="" loading="lazy" decoding="async">
-    <div class="wrap">
-      <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
-      <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
-    </div>
-  </section>"""
+{cta_band(lang, "about", "@@")}"""
     write(lang, "about", c["about_title"], c["about_desc"], about)
 
     # ---------------------------------------------------------------- offer
     packs = "\n        ".join(
         f'<article class="pack reveal" data-featured="{"true" if p["featured"] else "false"}">'
-        + (f'<p class="pack-tag">★ {p[lang]["tag"]}</p>' if p[lang]["tag"] else '<p class="pack-tag">0' + p["n"] + '</p>')
-        + f'<h3>{p[lang]["name"]}</h3>'
-          f'<p class="pack-len">{p[lang]["len"]}</p>'
-          f'<p>{p[lang]["desc"]}</p>'
-          f'<p class="pack-price">{p["price"]}</p></article>' for p in PACKS)
+        + (f'<p class="pack-tag">★ {p[lang]["tag"]}</p>' if p[lang]["tag"] else f'<p class="pack-tag">0{p["n"]}</p>')
+        + f'<h3>{p[lang]["name"]}</h3><p class="pack-len">{p[lang]["len"]}</p>'
+          f'<p>{p[lang]["desc"]}</p><p class="pack-price">{p["price"]}</p></article>' for p in PACKS)
     extras = "\n            ".join(f'<li><span>{a}</span><span>{b}</span></li>' for a, b in c["extras"])
     general = "\n            ".join(f'<li><span>{a}</span><span>{b}</span></li>' for a, b in c["general"])
     pay = "\n            ".join(f'<li><span>{a}</span><span>{b}</span></li>' for a, b in c["pay"])
@@ -641,34 +515,28 @@ def build(lang):
         <p class="lede dim" style="max-width:40ch;margin-top:1em">{c["offer_lede"]}</p>
       </div>
     </div>
-    <div class="wrap">
-      <div class="packs">
+    <div class="wrap"><div class="packs">
         {packs}
-      </div>
-    </div>
+    </div></div>
   </section>
 
   <section class="section">
     <div class="wrap railed">
       <div class="rail"><span>{c["extras_h"]}</span></div>
-      <div>
-        <h2 class="h-lg">{c["extras_h"]}</h2>
+      <div><h2 class="h-lg">{c["extras_h"]}</h2>
         <ul class="specs" style="margin-top:1.8em;max-width:60ch">
             {extras}
-        </ul>
-      </div>
+        </ul></div>
     </div>
   </section>
 
   <section class="section">
     <div class="wrap railed">
       <div class="rail"><span>{c["general_h"]}</span></div>
-      <div>
-        <h2 class="h-lg">{c["general_h"]}</h2>
+      <div><h2 class="h-lg">{c["general_h"]}</h2>
         <ul class="specs" style="margin-top:1.8em;max-width:60ch">
             {general}
-        </ul>
-      </div>
+        </ul></div>
     </div>
   </section>
 
@@ -687,20 +555,14 @@ def build(lang):
     </div>
   </section>
 
-  <section class="cta-band">
-    <img src="@@assets/img/lg/na-10.jpg" alt="" loading="lazy" decoding="async">
-    <div class="wrap">
-      <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
-      <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
-    </div>
-  </section>"""
+{cta_band(lang, "offer", "@@")}"""
     write(lang, "offer", c["offer_title"], c["offer_desc"], offer)
 
     # ---------------------------------------------------------------- contact
     opts = "\n                ".join(
-        f'<option{" value=\"\"" if i == 0 else ""}>{o}</option>' for i, o in enumerate(c["f_cov_opts"]))
-    faq = "\n            ".join(
-        f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in c["faq"])
+        (f'<option value="">{o}</option>' if i == 0 else f'<option>{o}</option>')
+        for i, o in enumerate(c["f_cov_opts"]))
+    faq = "\n            ".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in c["faq"])
     contact = f"""  <section class="section">
     <div class="wrap railed">
       <div class="rail"><span>{c["contact_rail1"]}</span><span>{c["contact_rail2"]}</span></div>
@@ -778,6 +640,28 @@ def build(lang):
   </section>"""
     write(lang, "contact", c["contact_title"], c["contact_desc"], contact)
 
-for lg in ("en", "pl"):
-    build(lg)
-print("built EN + PL")
+
+def sitemap():
+    urls = []
+    for lang in ("en", "pl"):
+        prefix = f"https://{DOMAIN}/" + ("" if lang == "en" else "pl/")
+        for p in PAGES:
+            urls.append(prefix + p + ".html")
+        for key, slug, *_ in ALBUMS:
+            urls.append(prefix + "album-" + slug + ".html")
+    body = "\n".join(f"  <url><loc>{u}</loc></url>" for u in urls)
+    open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write(
+        f'<?xml version="1.0" encoding="UTF-8"?>\n'
+        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{body}\n</urlset>\n')
+    open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8").write(
+        f"User-agent: *\nAllow: /\nSitemap: https://{DOMAIN}/sitemap.xml\n")
+    open(os.path.join(OUT, "CNAME"), "w", encoding="utf-8").write(DOMAIN + "\n")
+    open(os.path.join(OUT, ".nojekyll"), "w").write("")
+
+
+if __name__ == "__main__":
+    for lg in ("en", "pl"):
+        build(lg)
+    sitemap()
+    total = sum(len(v) for v in PHOTOS.values())
+    print(f"built EN + PL · {len(ALBUMS)} albums · {total} photographs")
