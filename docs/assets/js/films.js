@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------- */
 window.HF_FILMS = [
   {
-    type: "youtube", id: "XPw7D7KUssw", poster: "mj",
+    type: "drive", id: "15ByiG5HNg84QvNmWlqPY7Ey9WxRpa1jT", poster: "mj",
     couple: "Monika & Julien",
     titleEn: "A Celebration of Love",
     titlePl: "A Celebration of Love",
@@ -23,7 +23,7 @@ window.HF_FILMS = [
     textPl: "W sercu Polski, tam gdzie się poznali, ich przygoda zaczęła się w piękny październikowy dzień — i trwa do dziś.",
   },
   {
-    type: "youtube", id: "F5dF0lmNNYc", poster: "bm",
+    type: "drive", id: "1y28-v6MfjWAfq15hzNoQEJQtnljvDG7j", poster: "bm",
     couple: "Basia & Michał",
     titleEn: "Moments of Magic",
     titlePl: "Moments of Magic",

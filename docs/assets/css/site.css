@@ -350,3 +350,28 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 /* ---------- gallery: steadier columns with 200+ frames ---------- */
 .gallery img{background:var(--ink-3)}
 @media (min-width:1400px){.gallery{columns:4}}
+
+/* ---------- back to top ---------- */
+.to-top{
+  position:fixed;z-index:70;
+  right:clamp(16px,2.5vw,34px);
+  bottom:calc(clamp(16px,2.5vw,34px) + env(safe-area-inset-bottom,0px));
+  width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  border:1px solid var(--line);
+  background:rgba(20,16,15,.72);color:var(--bone);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 10px 30px rgba(8,9,9,.4);
+  opacity:0;visibility:hidden;transform:translateY(10px) scale(.94);
+  transition:opacity .35s ease,transform .45s cubic-bezier(.22,1,.36,1),
+             visibility 0s linear .35s,border-color .3s ease,background .3s ease;
+}
+.to-top.is-shown{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .35s ease,transform .45s cubic-bezier(.22,1,.36,1),
+             visibility 0s linear 0s,border-color .3s ease,background .3s ease;
+}
+.to-top:hover,.to-top:focus-visible{background:rgba(196,136,60,.3);border-color:rgba(196,136,60,.6)}
+.to-top svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:600px){.to-top{width:44px;height:44px}}
+@media print{.to-top{display:none}}

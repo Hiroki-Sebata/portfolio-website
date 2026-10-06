@@ -218,6 +218,7 @@ def footer(lang, base):
         blurb = "Wedding films and photography. I work solo — from the first frame to the finished film."
         h_pages, h_contact, rights = "Pages", "Contact", "All rights reserved"
         made = "Photographs and films: " + BRAND
+    totop = "Wróć na górę" if lang == "pl" else "Back to top"
     return f"""<footer class="site-foot">
   <div class="wrap">
     <div class="foot-grid">
@@ -246,6 +247,9 @@ def footer(lang, base):
     </div>
   </div>
 </footer>
+<button class="to-top" type="button" id="to-top" aria-label="{totop}">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
 <script src="{base}assets/js/films.js"></script>
 <script src="{base}assets/js/site.js"></script>
 <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>

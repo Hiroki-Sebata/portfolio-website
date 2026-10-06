@@ -51,10 +51,16 @@ from that wedding's photographs.
 **Drive videos must be shared as "Anyone with the link"**, or the player shows
 nothing.
 
-**YouTube videos must have embedding switched on**, or the player shows
-*"Video unavailable — error 153"*. In YouTube Studio: Content → the video → Edit →
-scroll to **Show more** → tick **Allow embedding** → Save. It is off by default on
-some accounts.
+All six films are currently Drive files.
+
+If you ever use YouTube again, note that an embedded YouTube video shows
+*"error 153"* when the page sends no referrer — which is what happens if you open
+an `.html` file straight from Finder. That is not a broken setting. Test over a
+real address instead:
+
+```bash
+cd docs && python3 -m http.server 8000     # then open http://localhost:8000
+```
 
 ## Adding a wedding
 

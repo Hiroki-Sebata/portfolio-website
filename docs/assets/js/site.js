@@ -258,6 +258,30 @@
     targets.forEach(function (t) { t.classList.add('is-in'); });
   }
 
+  /* ---- back to top: appears once past halfway ---- */
+  var toTop = doc.getElementById('to-top');
+  if (toTop) {
+    var ticking = false;
+    function checkTop() {
+      ticking = false;
+      var doch = doc.documentElement;
+      var scrollable = (doc.body.scrollHeight || 0) - window.innerHeight;
+      // Nothing to go back to on a page that barely scrolls.
+      var past = scrollable > 400 && (window.scrollY || doch.scrollTop) > scrollable * 0.5;
+      toTop.classList.toggle('is-shown', past);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(checkTop); }
+    }, { passive: true });
+    window.addEventListener('resize', checkTop, { passive: true });
+    toTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      var skip = doc.querySelector('.skip');
+      if (skip) skip.focus({ preventScroll: true });
+    });
+    checkTop();
+  }
+
   /* ---- copy buttons ---- */
   doc.querySelectorAll('[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
