@@ -35,7 +35,7 @@ ALBUMS = [
     ("da", "dominika-artur",  "Dominika &amp; Artur",  "Dominika &amp; Artur"),
     ("jd", "julia-dominik",   "Julia &amp; Dominik",   "Julia &amp; Dominik"),
     ("ja", "julia-artsiom",   "Julia &amp; Artsiom",   "Julia &amp; Artsiom"),
-    ("uc", "wesele",          "A wedding",             "Wesele"),
+    ("ai", "agata-igor",      "Agata &amp; Igor",      "Agata &amp; Igor"),
 ]
 ALBUM_BY_KEY = {a[0]: a for a in ALBUMS}
 

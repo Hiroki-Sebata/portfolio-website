@@ -215,14 +215,23 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 .film-cue{margin-top:1.8em}
 
 /* ---------- film player window ---------- */
-.film-modal{position:fixed;inset:0;z-index:400;background:rgba(8,9,9,.95);display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,64px)}
+.film-modal{
+  position:fixed;inset:0;z-index:400;background:rgba(8,9,9,.95);
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(72px,10vh,110px) clamp(16px,4vw,64px) clamp(40px,7vh,72px);
+}
 .film-modal[hidden]{display:none}
-.film-modal-inner{width:min(1180px,100%);display:flex;flex-direction:column;gap:14px}
+/* Width is also capped by the height left over once the close button and the
+   caption have their room, so the 16:9 frame never slides under the X. */
+.film-modal-inner{
+  width:min(1060px,100%,calc((100vh - 230px) * 16 / 9));
+  display:flex;flex-direction:column;gap:14px;
+}
 .film-modal-frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
 .film-modal-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .film-modal-cap{margin:0;text-align:center;font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-dim)}
 .film-modal-close{
-  position:absolute;top:clamp(14px,3vw,28px);right:clamp(12px,3vw,28px);
+  position:absolute;z-index:2;top:clamp(18px,3.5vh,34px);right:clamp(16px,4vw,46px);
   width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:none;
   color:var(--bone);cursor:pointer;font-size:1rem;line-height:1;display:grid;place-items:center;
 }
