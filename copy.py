@@ -3,6 +3,8 @@
 
 COPY = {
  "en": {
+  "consent_reset": "Change my cookie choice",
+  "consent_reset_done": "Cleared. The notice will appear again in a moment.",
   "consent_text": "This site uses the Meta Pixel to see how many people arrive from Facebook and Instagram ads. Nothing is loaded until you choose.",
   "consent_yes": "Accept",
   "consent_no": "Decline",
@@ -117,6 +119,8 @@ COPY = {
  },
 
  "pl": {
+  "consent_reset": "Zmień decyzję o cookies",
+  "consent_reset_done": "Wyczyszczone. Komunikat pojawi się za chwilę.",
   "consent_text": "Ta strona korzysta z Meta Pixela, aby sprawdzić, ile osób trafia tutaj z reklam na Facebooku i Instagramie. Nic nie ładuje się, zanim nie podejmiecie decyzji.",
   "consent_yes": "Akceptuję",
   "consent_no": "Nie zgadzam się",

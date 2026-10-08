@@ -436,3 +436,22 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 }
 /* keep the back-to-top button clear of the notice */
 .consent.is-shown ~ .to-top{bottom:calc(clamp(16px,2.5vw,34px) + env(safe-area-inset-bottom,0px) + 96px)}
+
+/* ---------- legal pages ---------- */
+.legal{max-width:68ch}
+.legal-block + .legal-block{margin-top:clamp(26px,3.2vw,44px)}
+.legal-block h2{margin-bottom:.7em}
+.legal p{margin:0 0 1em;color:var(--bone-dim);line-height:1.78}
+.legal p:last-child{margin-bottom:0}
+.legal strong{color:var(--bone);font-weight:400}
+.legal a{color:var(--bone);text-decoration:none;border-bottom:1px solid rgba(196,136,60,.5)}
+.legal a:hover{border-bottom-color:var(--amber)}
+.legal-list{margin:0 0 1em;padding:0;list-style:none;display:grid;gap:.6em}
+.legal-list li{
+  position:relative;padding-left:1.1em;color:var(--bone-dim);line-height:1.7;
+}
+.legal-list li::before{
+  content:"";position:absolute;left:0;top:.72em;width:5px;height:1px;background:var(--amber);
+}
+.foot-legal{text-decoration:none;border-bottom:1px solid var(--line)}
+.foot-legal:hover{border-bottom-color:var(--amber);color:var(--bone)}

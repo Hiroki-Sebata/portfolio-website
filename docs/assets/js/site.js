@@ -76,7 +76,7 @@
       loadPixel();
     } else if (choice !== 'no' && consentBar) {
       consentBar.hidden = false;
-      requestAnimationFrame(function () { consentBar.classList.add('is-shown'); });
+      setTimeout(function () { consentBar.classList.add('is-shown'); }, 20);
     }
     if (consentBar) {
       consentBar.addEventListener('click', function (e) {
@@ -89,6 +89,22 @@
         if (yes) loadPixel();
       });
     }
+  }
+
+  /* Withdrawing consent has to be as easy as giving it (privacy page button). */
+  var consentReset = doc.getElementById('consent-reset');
+  if (consentReset) {
+    consentReset.addEventListener('click', function () {
+      try { localStorage.removeItem(CONSENT_KEY); } catch (e) {}
+      var done = doc.getElementById('consent-reset-done');
+      if (done) done.hidden = false;
+      if (consentBar) {
+        consentBar.hidden = false;
+        setTimeout(function () { consentBar.classList.add('is-shown'); }, 20);
+      } else {
+        setTimeout(function () { location.reload(); }, 900);
+      }
+    });
   }
 
   /* Reports a completed enquiry, so ad spend can be measured against real

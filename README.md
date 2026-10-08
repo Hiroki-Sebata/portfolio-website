@@ -122,6 +122,24 @@ the enquiry form — so ad spend can be judged on enquiries, not just visits.
 
 Clearing site data in a browser brings the notice back.
 
+## Privacy policy
+
+`privacy.py` holds the wording for both languages; `build.py` renders
+`docs/privacy.html` and `docs/pl/privacy.html`. It is deliberately **not** in the
+menu — it is reached from the small link in the footer and from the cookie
+notice.
+
+Two things in it need your attention:
+
+- the **business address** line is a placeholder in both languages
+- the **retention periods** (24 months for enquiries that go nowhere) are a
+  sensible default, not a decision you made — change them if you keep things
+  longer or shorter
+
+The page carries a *Change my cookie choice* button, because withdrawing consent
+has to be as easy as giving it. It clears the stored choice and brings the notice
+straight back.
+
 ## Domain
 
 `docs/CNAME` contains `hiroki-filmuje.pl`. For that to work the domain's DNS must

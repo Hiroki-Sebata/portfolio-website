@@ -8,6 +8,7 @@ docs/assets/img/ and grouped into albums by their filename prefix.
 """
 import os, re, json, random
 from copy import COPY
+from privacy import PRIVACY, PRIVACY_UPDATED
 
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(SRC_DIR, "docs")
@@ -164,12 +165,14 @@ def head(lang, page, title, desc, base):
 
 def header(lang, page, base):
     nav = NAV[lang]
-    cur = page if page in PAGES else "work"
+    # pages outside the menu (privacy) must not light up a menu item
+    cur = page if page in PAGES else ""
     inline = "\n          ".join(
         '<a href="%s.html"%s>%s</a>' % (p, ' aria-current="page"' if p == cur else '', nav[p])
         for p in PAGES if p != "contact")
     drawer_links = "\n        ".join('<a href="%s.html">%s</a>' % (p, nav[p]) for p in PAGES)
-    target = page if page in PAGES else "work"
+    # the language switch should stay on the same page, menu or not
+    target = page if page in PAGES or page == "privacy" else "work"
     en_href = ("../" if lang == "pl" else "") + target + ".html"
     pl_href = ("" if lang == "pl" else "pl/") + target + ".html"
     skip = "Skip to content" if lang == "en" else "Przejdź do treści"
@@ -233,7 +236,7 @@ src="https://www.facebook.com/tr?id={id}&ev=PageView&noscript=1"></noscript>
 
 CONSENT_BAR = """<script>window.HF_PIXEL_ID="{id}";</script>
 <div class="consent" id="consent" hidden>
-  <p class="consent-text">{text}</p>
+  <p class="consent-text">{text} <a href="{privacy_href}">{privacy_label}</a></p>
   <div class="consent-actions">
     <button class="btn btn-sm" type="button" data-consent="no">{no}</button>
     <button class="btn btn-sm btn-solid" type="button" data-consent="yes">{yes}</button>
@@ -255,6 +258,8 @@ def meta_pixel(lang):
         return PIXEL_BASE.replace("{id}", META_PIXEL_ID)
     c = COPY[lang]
     return (CONSENT_BAR.replace("{id}", META_PIXEL_ID)
+            .replace("{privacy_href}", "privacy.html")
+            .replace("{privacy_label}", "Polityka prywatności" if lang == "pl" else "Privacy policy")
             .replace("{text}", c["consent_text"])
             .replace("{yes}", c["consent_yes"])
             .replace("{no}", c["consent_no"]))
@@ -271,6 +276,7 @@ def footer(lang, base, page=""):
         blurb = "Wedding films and photography. I work solo — from the first frame to the finished film."
         h_pages, h_contact, rights = "Pages", "Contact", "All rights reserved"
         made = "Photographs and films: " + BRAND
+    privacy_label = "Polityka prywatności" if lang == "pl" else "Privacy policy"
     totop = "Wróć na górę" if lang == "pl" else "Back to top"
     # The Work page is long enough that halfway is a long way down, so there the
     # button appears after a fixed amount of scrolling instead.
@@ -300,7 +306,7 @@ def footer(lang, base, page=""):
     </div>
     <div class="foot-bottom">
       <span>© <span id="yr">2026</span> {BRAND} · {rights}</span>
-      <span>{made}</span>
+      <span><a href="privacy.html" class="foot-legal">{privacy_label}</a> · {made}</span>
     </div>
   </div>
 </footer>
@@ -753,11 +759,61 @@ def build(lang):
     write(lang, "contact", c["contact_title"], c["contact_desc"], contact)
 
 
+def build_privacy(lang):
+    """A page of its own, deliberately not in the menu — reached from the
+    footer link and from the cookie notice."""
+    d = PRIVACY[lang]
+    c = COPY[lang]
+    out = []
+    for heading, blocks in d["sections"]:
+        out.append('      <section class="legal-block">')
+        out.append('        <h2 class="h-sm">%s</h2>' % heading)
+        for b in blocks:
+            if isinstance(b, tuple) and b[0] == "list":
+                out.append('        <ul class="legal-list">')
+                out.extend('          <li>%s</li>' % i for i in b[1])
+                out.append('        </ul>')
+            elif isinstance(b, tuple) and b[0] == "consent-reset":
+                out.append('        <p><button class="btn" type="button" '
+                           'id="consent-reset">%s</button></p>' % c["consent_reset"])
+                out.append('        <p class="field-note" id="consent-reset-done" hidden>%s</p>'
+                           % c["consent_reset_done"])
+            else:
+                out.append('        <p>%s</p>' % b)
+        out.append('      </section>')
+    body = """  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>{eyebrow}</span><span>{updated}</span></div>
+      <div>
+        <h1 class="h-xl">{title}</h1>
+        <p class="lede dim" style="max-width:46ch;margin-top:1em">{lede}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap railed">
+      <div class="rail"><span>{eyebrow}</span></div>
+      <div class="legal">
+{blocks}
+      </div>
+    </div>
+  </section>""".format(
+        eyebrow=("Polityka prywatności" if lang == "pl" else "Privacy policy"),
+        updated=(("Aktualizacja: " if lang == "pl" else "Updated ") + PRIVACY_UPDATED[lang]),
+        title=d["title"], lede=d["lede"], blocks="\n".join(out))
+    title = "%s — %s" % (d["title"], BRAND)
+    desc = ("Jakie dane zbiera ta strona, po co i jak je usunąć."
+            if lang == "pl" else
+            "What this site collects, why, and how to have it removed.")
+    write(lang, "privacy", title, desc, body)
+
+
 def sitemap():
     urls = []
     for lang in ("en", "pl"):
         prefix = f"https://{DOMAIN}/" + ("" if lang == "en" else "pl/")
-        for p in PAGES:
+        for p in PAGES + ["privacy"]:
             urls.append(prefix + p + ".html")
         for key, slug, *_ in ALBUMS:
             urls.append(prefix + "album-" + slug + ".html")
@@ -777,6 +833,7 @@ def sitemap():
 if __name__ == "__main__":
     for lg in ("en", "pl"):
         build(lg)
+        build_privacy(lg)
     sitemap()
     total = sum(len(v) for v in PHOTOS.values())
     print(f"built EN + PL · {len(ALBUMS)} albums · {total} photographs")
