@@ -28,7 +28,7 @@ WEB3FORMS_KEY = "aa2ad116-3270-435b-9b0b-bd428f8ce67b"
 # ---------------------------------------------------------------- Meta Pixel
 # Paste the pixel ID from Meta Events Manager between the quotes (digits only).
 # While this is empty no tracking code is written into the pages at all.
-META_PIXEL_ID = ""
+META_PIXEL_ID = "1143058494743549"
 # True  -> the pixel loads only after a visitor accepts the cookie notice (EU/GDPR)
 # False -> the pixel loads for everyone, immediately
 META_PIXEL_ASK_CONSENT = True
