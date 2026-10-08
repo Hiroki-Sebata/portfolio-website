@@ -24,6 +24,14 @@ DOMAIN = "hiroki-filmuje.pl"
 # if it ever gets abused.
 WEB3FORMS_KEY = "aa2ad116-3270-435b-9b0b-bd428f8ce67b"
 
+# ---------------------------------------------------------------- Meta Pixel
+# Paste the pixel ID from Meta Events Manager between the quotes (digits only).
+# While this is empty no tracking code is written into the pages at all.
+META_PIXEL_ID = ""
+# True  -> the pixel loads only after a visitor accepts the cookie notice (EU/GDPR)
+# False -> the pixel loads for everyone, immediately
+META_PIXEL_ASK_CONSENT = True
+
 PAGES = ["index", "work", "about", "offer", "contact"]
 NAV = {
     "en": {"index": "Home", "work": "Work", "about": "About me", "offer": "Offer", "contact": "Contact"},
@@ -210,6 +218,48 @@ def header(lang, page, base):
         ig=INSTAGRAM, ig_handle=IG_HANDLE, base=base, drawer_img=HERO[1])
 
 
+PIXEL_BASE = """<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','{id}');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id={id}&ev=PageView&noscript=1"></noscript>
+<!-- End Meta Pixel -->"""
+
+CONSENT_BAR = """<script>window.HF_PIXEL_ID="{id}";</script>
+<div class="consent" id="consent" hidden>
+  <p class="consent-text">{text}</p>
+  <div class="consent-actions">
+    <button class="btn btn-sm" type="button" data-consent="no">{no}</button>
+    <button class="btn btn-sm btn-solid" type="button" data-consent="yes">{yes}</button>
+  </div>
+</div>"""
+
+
+def meta_pixel(lang):
+    """Meta Pixel. Writes nothing at all while META_PIXEL_ID is empty.
+
+    When META_PIXEL_ASK_CONSENT is on, the page only carries the id and the
+    notice; site.js fetches Facebook's script after the visitor accepts, and
+    never before. The no-JavaScript <noscript> fallback cannot be gated, so it
+    is only used when consent is not required.
+    """
+    if not META_PIXEL_ID:
+        return ""
+    if not META_PIXEL_ASK_CONSENT:
+        return PIXEL_BASE.replace("{id}", META_PIXEL_ID)
+    c = COPY[lang]
+    return (CONSENT_BAR.replace("{id}", META_PIXEL_ID)
+            .replace("{text}", c["consent_text"])
+            .replace("{yes}", c["consent_yes"])
+            .replace("{no}", c["consent_no"]))
+
+
 def footer(lang, base, page=""):
     nav = NAV[lang]
     links = "\n            ".join(f'<li><a href="{p}.html">{nav[p]}</a></li>' for p in PAGES)
@@ -225,6 +275,7 @@ def footer(lang, base, page=""):
     # The Work page is long enough that halfway is a long way down, so there the
     # button appears after a fixed amount of scrolling instead.
     totop_mode = "distance" if page == "work" else "half"
+    pixel = meta_pixel(lang)
     return f"""<footer class="site-foot">
   <div class="wrap">
     <div class="foot-grid">
@@ -256,6 +307,7 @@ def footer(lang, base, page=""):
 <button class="to-top" type="button" id="to-top" aria-label="{totop}" data-mode="{totop_mode}">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
 </button>
+{pixel}
 <script src="{base}assets/js/films.js"></script>
 <script src="{base}assets/js/site.js"></script>
 <script>document.getElementById('yr').textContent=new Date().getFullYear();</script>

@@ -405,3 +405,34 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 /* ---------- tighter joins between two related sections ---------- */
 .section.tight-bottom{padding-bottom:clamp(20px,2.4vw,34px)}
 .section.tight-top{padding-top:clamp(20px,2.4vw,34px)}
+
+/* ---------- cookie / pixel consent ---------- */
+.consent{
+  position:fixed;z-index:120;
+  left:clamp(14px,2.5vw,28px);
+  right:clamp(14px,2.5vw,28px);
+  bottom:calc(clamp(14px,2.5vw,28px) + env(safe-area-inset-bottom,0px));
+  max-width:560px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;
+  padding:clamp(14px,1.6vw,20px) clamp(16px,1.8vw,22px);
+  background:rgba(20,16,15,.93);
+  border:1px solid var(--line);
+  border-radius:20px 8px 20px 8px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 16px 44px rgba(8,9,9,.5);
+  opacity:0;transform:translateY(12px);
+  transition:opacity .4s ease,transform .5s cubic-bezier(.22,1,.36,1);
+}
+.consent.is-shown{opacity:1;transform:none}
+.consent-text{
+  margin:0;flex:1 1 240px;min-width:0;
+  font-size:.86rem;line-height:1.6;color:var(--bone-dim);
+}
+.consent-actions{display:flex;gap:8px;flex:0 0 auto}
+@media (max-width:520px){
+  .consent{left:12px;right:12px}
+  .consent-actions{width:100%}
+  .consent-actions .btn{flex:1 1 0}
+}
+/* keep the back-to-top button clear of the notice */
+.consent.is-shown ~ .to-top{bottom:calc(clamp(16px,2.5vw,34px) + env(safe-area-inset-bottom,0px) + 96px)}

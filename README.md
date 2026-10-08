@@ -98,6 +98,30 @@ still works; the visitor just lands on Web3Forms' own confirmation page.
 Note: Web3Forms refuses submissions sent from a server (curl and the like) on the
 free plan. Test it from a browser.
 
+## Meta Pixel (Facebook / Instagram ads)
+
+Two settings at the top of `build.py`:
+
+```python
+META_PIXEL_ID = ""          # paste the id from Meta Events Manager, digits only
+META_PIXEL_ASK_CONSENT = True
+```
+
+While `META_PIXEL_ID` is empty **no tracking code is written into the pages at
+all** — not a script, not a cookie, not a request. Paste the id, run
+`python3 build.py`, push, and it is live on every page in both languages.
+
+With `META_PIXEL_ASK_CONSENT = True` the page carries only the id and a short
+notice; Facebook's script is fetched after the visitor presses Accept and never
+before. Decline is remembered too, and nothing loads. This is what the EU
+expects. Set it to `False` to load the pixel for everyone immediately, which also
+adds the `<noscript>` fallback image (that one cannot be gated).
+
+What gets recorded: `PageView` on every page, and `Lead` when someone completes
+the enquiry form — so ad spend can be judged on enquiries, not just visits.
+
+Clearing site data in a browser brings the notice back.
+
 ## Domain
 
 `docs/CNAME` contains `hiroki-filmuje.pl`. For that to work the domain's DNS must

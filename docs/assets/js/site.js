@@ -42,6 +42,61 @@
     }
   }[LANG];
 
+  /* ---- Meta Pixel, behind a consent notice -------------------------------
+     Nothing from Facebook is requested until the visitor accepts. The choice is
+     remembered per browser; clearing site data brings the notice back.          */
+  var PIXEL_ID = window.HF_PIXEL_ID || '';
+  var CONSENT_KEY = 'hf_consent';
+
+  function readConsent() {
+    try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+  }
+  function writeConsent(v) {
+    try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {}
+  }
+  function loadPixel() {
+    if (!PIXEL_ID || window.fbq) return;
+    /* Meta's standard base code */
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = !0; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    }(window, doc, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', PIXEL_ID);
+    window.fbq('track', 'PageView');
+  }
+
+  var consentBar = doc.getElementById('consent');
+  if (PIXEL_ID) {
+    var choice = readConsent();
+    if (choice === 'yes') {
+      loadPixel();
+    } else if (choice !== 'no' && consentBar) {
+      consentBar.hidden = false;
+      requestAnimationFrame(function () { consentBar.classList.add('is-shown'); });
+    }
+    if (consentBar) {
+      consentBar.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-consent]');
+        if (!b) return;
+        var yes = b.getAttribute('data-consent') === 'yes';
+        writeConsent(yes ? 'yes' : 'no');
+        consentBar.classList.remove('is-shown');
+        setTimeout(function () { consentBar.hidden = true; }, 350);
+        if (yes) loadPixel();
+      });
+    }
+  }
+
+  /* Reports a completed enquiry, so ad spend can be measured against real
+     enquiries and not only visits. Silent when the pixel was never loaded. */
+  window.hfTrackLead = function () {
+    if (window.fbq) { try { window.fbq('track', 'Lead'); } catch (e) {} }
+  };
+
   /* ---- drawer ---- */
   var drawer = doc.getElementById('drawer');
   if (drawer) {
@@ -453,6 +508,7 @@
         .then(function (res) {
           if (!res || !res.success) throw new Error((res && res.message) || 'failed');
           form.reset();
+          if (window.hfTrackLead) window.hfTrackLead();
           say('<strong>' + T.sentOk + '</strong><br>' + T.sentOkSub);
         })
         .catch(function () {
