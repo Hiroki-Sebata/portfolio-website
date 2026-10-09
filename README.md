@@ -117,8 +117,22 @@ before. Decline is remembered too, and nothing loads. This is what the EU
 expects. Set it to `False` to load the pixel for everyone immediately, which also
 adds the `<noscript>` fallback image (that one cannot be gated).
 
-What gets recorded: `PageView` on every page, and `Lead` when someone completes
-the enquiry form — so ad spend can be judged on enquiries, not just visits.
+What gets recorded, once a visitor accepts:
+
+| Event | When |
+|---|---|
+| `PageView` | every page |
+| `ViewPortfolio` | the Work page |
+| `ViewAlbum` | one wedding's album — carries which one |
+| `ViewOffer` | the prices |
+| `ViewAbout` | About me |
+| `ViewContact` | the contact page, before anything is typed |
+| `PlayFilm` | a film was opened and started — carries which couple |
+| `Lead` | an enquiry was completed and sent |
+
+Events Manager has no per-URL report, which is why each page sends a named event
+instead of relying on `PageView` alone. They appear in Events Manager by name
+with no extra setup, and can be used as campaign optimisation goals.
 
 Clearing site data in a browser brings the notice back.
 

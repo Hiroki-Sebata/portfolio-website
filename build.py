@@ -161,7 +161,7 @@ def head(lang, page, title, desc, base):
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="{base}assets/css/site.css">
 </head>
-<body>"""
+<body data-page="{page}">"""
 
 def header(lang, page, base):
     nav = NAV[lang]

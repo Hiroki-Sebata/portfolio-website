@@ -66,8 +66,49 @@
       s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
     }(window, doc, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
     window.fbq('init', PIXEL_ID);
-    window.fbq('track', 'PageView');
+    trackPage();
   }
+
+  /* What gets reported to Meta once consent is given.
+
+     PageView alone cannot tell you which page someone looked at — Events
+     Manager has no per-URL report. So each page also sends a named event, and
+     those appear in Events Manager by name with no extra setup:
+
+       ViewPortfolio   the Work page
+       ViewAlbum       one wedding's album (carries which one)
+       ViewOffer       the prices
+       ViewAbout       About me
+       ViewContact     the contact page, before anything is typed
+       PlayFilm        a film was actually opened and started
+       Lead            an enquiry was completed and sent
+
+     Together those read as a funnel: looked -> watched -> checked the price ->
+     got in touch.                                                            */
+  function trackPage() {
+    if (!window.fbq) return;
+    var page = (doc.body.getAttribute('data-page') || '').toLowerCase();
+    var lang = doc.documentElement.lang === 'pl' ? 'pl' : 'en';
+    window.fbq('track', 'PageView');
+
+    if (page.indexOf('album-') === 0) {
+      window.fbq('trackCustom', 'ViewAlbum', { album: page.slice(6), lang: lang });
+      return;
+    }
+    var named = {
+      work: 'ViewPortfolio',
+      offer: 'ViewOffer',
+      about: 'ViewAbout',
+      contact: 'ViewContact'
+    }[page];
+    if (named) window.fbq('trackCustom', named, { lang: lang });
+  }
+
+  window.hfTrackFilm = function (couple) {
+    if (window.fbq) {
+      try { window.fbq('trackCustom', 'PlayFilm', { film: couple || '' }); } catch (e) {}
+    }
+  };
 
   var consentBar = doc.getElementById('consent');
   if (PIXEL_ID) {
@@ -339,6 +380,7 @@
         var f = films[i];
         if (!f || !filmModal) return;
         lastFilmFocus = doc.activeElement;
+        if (window.hfTrackFilm) window.hfTrackFilm(f.couple);
         var holder = filmModal.querySelector('.film-modal-frame');
         var cap = filmModal.querySelector('.film-modal-cap');
         holder.innerHTML = '';
