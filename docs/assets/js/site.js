@@ -2,6 +2,13 @@
   var doc = document;
   doc.documentElement.classList.add('js');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Phones report mouseenter on a tap and often never report the matching
+  // mouseleave, which would leave a carousel paused for good. Only treat
+  // hover as a pause signal on devices that really hover.
+  var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Reduced motion should remove the sliding, not the slideshow: the panels
+  // still change, they just cut instead of animating.
+  var slideBehavior = reduce ? 'auto' : 'smooth';
   var LANG = doc.documentElement.lang === 'pl' ? 'pl' : 'en';
   var T = {
     pl: {
@@ -207,7 +214,7 @@
     // hovering, focusing or pressing an arrow all hold it where it is.
     var qTimer = null;
     function qStart() {
-      if (reduce || items.length < 2) return;
+      if (items.length < 2) return;
       qStop();
       qTimer = setInterval(function () { show(q + 1); }, 5000);
     }
@@ -216,8 +223,10 @@
 
     if (p) p.addEventListener('click', function () { show(q - 1); qNudge(); });
     if (nx) nx.addEventListener('click', function () { show(q + 1); qNudge(); });
-    quotes.addEventListener('mouseenter', qStop);
-    quotes.addEventListener('mouseleave', qStart);
+    if (canHover) {
+      quotes.addEventListener('mouseenter', qStop);
+      quotes.addEventListener('mouseleave', qStart);
+    }
     quotes.addEventListener('focusin', qStop);
     quotes.addEventListener('focusout', qStart);
     doc.addEventListener('visibilitychange', function () { doc.hidden ? qStop() : qStart(); });
@@ -279,7 +288,7 @@
       // Scroll snapping cancels an animated scroll and pulls the strip back to
       // where it started, so turn it off for the length of the animation.
       strip.classList.add('is-nav');
-      strip.scrollTo({ left: x, behavior: reduce ? 'auto' : 'smooth' });
+      strip.scrollTo({ left: x, behavior: slideBehavior });
       clearTimeout(navTimer);
       navTimer = setTimeout(function () { strip.classList.remove('is-nav'); }, 700);
     }
@@ -300,7 +309,6 @@
       scrollToX(strip.scrollLeft >= maxScroll() ? 0 : strip.scrollLeft + step());
     }
     function start() {
-      if (reduce) return;
       stop();
       autoTimer = setInterval(tick, 5000);
     }
@@ -308,16 +316,22 @@
     function nudge() { stop(); start(); }
     function hold(v) { held = v; }
 
-    strip.addEventListener('mouseenter', function () { hold(true); });
-    strip.addEventListener('mouseleave', function () { hold(false); });
+    if (canHover) {
+      strip.addEventListener('mouseenter', function () { hold(true); });
+      strip.addEventListener('mouseleave', function () { hold(false); });
+      if (nav) {
+        nav.addEventListener('mouseenter', function () { hold(true); });
+        nav.addEventListener('mouseleave', function () { hold(false); });
+      }
+    }
     strip.addEventListener('focusin', function () { hold(true); });
     strip.addEventListener('focusout', function () { hold(false); });
     strip.addEventListener('pointerdown', function () { hold(true); });
-    window.addEventListener('pointerup', function () { hold(false); nudge(); });
-    if (nav) {
-      nav.addEventListener('mouseenter', function () { hold(true); });
-      nav.addEventListener('mouseleave', function () { hold(false); });
-    }
+    // A touch that turns into a scroll ends in pointercancel, not pointerup.
+    // Without these the strip stayed paused for ever after the first swipe.
+    ['pointerup', 'pointercancel', 'touchend', 'touchcancel'].forEach(function (ev) {
+      window.addEventListener(ev, function () { hold(false); nudge(); }, { passive: true });
+    });
     doc.addEventListener('visibilitychange', function () { doc.hidden ? stop() : start(); });
     start();
   });

@@ -81,7 +81,7 @@ HERO = ["ja-48", "nm-39", "na-5", "da-33"]
 # home strip: one frame per wedding, in the order you asked for, each linking to its album
 # One frame per wedding, in the order you asked for; the last two follow so every
 # album is reachable from the home page and the strip has something to scroll.
-STRIP = [("nm-28", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd"),
+STRIP = [("nm-39", "nm"), ("na-10", "na"), ("da-9", "da"), ("jd-25", "jd"),
          ("ja-29", "ja"), ("ai-3", "ai")]
 CTA_IMG = {"index": "ja-59", "work": "nm-11", "about": "da-3", "offer": "na-10"}
 
@@ -103,6 +103,53 @@ FOCUS = {
 
 def focus(stem):
     return FOCUS.get(stem, FOCUS_DEFAULT)
+
+_SIZE_CACHE = {}
+
+
+def img_size(path):
+    """Intrinsic pixel size of a JPEG, read straight from its header.
+
+    srcset needs each file's real width. Our photographs are a mix of portrait
+    and landscape, so the width of a '900px' file is 900 for one and 600 for the
+    other — guessing would make the browser pick the wrong file."""
+    if path in _SIZE_CACHE:
+        return _SIZE_CACHE[path]
+    try:
+        with open(path, "rb") as fh:
+            data = fh.read()
+    except OSError:
+        return None
+    i, n = 2, len(data)
+    while i < n - 9:
+        if data[i] != 0xFF:
+            i += 1
+            continue
+        marker = data[i + 1]
+        if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
+                      0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
+            h = (data[i + 5] << 8) + data[i + 6]
+            w = (data[i + 7] << 8) + data[i + 8]
+            _SIZE_CACHE[path] = (w, h)
+            return (w, h)
+        if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
+            i += 2
+            continue
+        seg = (data[i + 2] << 8) + data[i + 3]
+        i += 2 + seg
+    return None
+
+
+def srcset_for(stem):
+    """md + lg as a srcset, with each file's true width."""
+    parts = []
+    for size in ("md", "lg"):
+        p = os.path.join(OUT, "assets/img", size, stem + ".jpg")
+        wh = img_size(p)
+        if wh:
+            parts.append("@@assets/img/%s/%s.jpg %dw" % (size, stem, wh[0]))
+    return ", ".join(parts)   # srcset candidates are comma separated
+
 
 def alt(stem, lang):
     key = stem.split("-")[0]
@@ -209,7 +256,7 @@ def header(lang, page, base):
       <a href="{ig}" target="_blank" rel="noopener">Instagram {ig_handle}</a>
     </div>
   </div>
-  <div class="drawer-art"><img src="{base}assets/img/md/{drawer_img}.jpg" alt="" loading="lazy"></div>
+  <div class="drawer-art"><img src="{base}assets/img/md/{drawer_img}.jpg" srcset="{drawer_srcset}" sizes="50vw" alt="" loading="lazy"></div>
 </div>"""
     return tpl.format(
         skip=skip, brand=BRAND, tagline=TAG[lang], inline=inline,
@@ -218,7 +265,8 @@ def header(lang, page, base):
         en_cur=' aria-current="true"' if lang == "en" else "",
         cta=nav["contact"], close=close, drawer_links=drawer_links,
         email=EMAIL, phone_raw=PHONE_RAW, phone=PHONE_DISPLAY,
-        ig=INSTAGRAM, ig_handle=IG_HANDLE, base=base, drawer_img=HERO[1])
+        ig=INSTAGRAM, ig_handle=IG_HANDLE, base=base, drawer_img=HERO[1],
+        drawer_srcset=srcset_for(HERO[1]).replace('@@', base))
 
 
 PIXEL_BASE = """<!-- Meta Pixel -->
@@ -351,13 +399,20 @@ def write(lang, page, title, desc, body):
     open(os.path.join(d, page + ".html"), "w", encoding="utf-8").write(out)
 
 # ================================================================= pages
+# column count by width: 1 under 620, 2 under 1040, 3 under 1400, then 4
+GALLERY_SIZES = ("(min-width:1400px) 23vw, (min-width:1040px) 31vw, "
+                 "(min-width:620px) 47vw, 92vw")
+STRIP_SIZES = "(min-width:460px) 340px, 74vw"
+
+
 def fig(stem, key, lang, with_caption=True):
     """One gallery tile. data-album scopes the lightbox to that wedding."""
     name = album_name(key, lang)
     cap = f'<figcaption>{name}</figcaption>' if (with_caption and name) else ''
     return (f'<figure><button type="button" data-full="@@assets/img/lg/{stem}.jpg" '
             f'data-album="{key}" data-cap="{name}">'
-            f'<img src="@@assets/img/md/{stem}.jpg" alt="{alt(stem, lang)}" loading="lazy" decoding="async">'
+            f'<img src="@@assets/img/md/{stem}.jpg" srcset="{srcset_for(stem)}" '
+            f'sizes="{GALLERY_SIZES}" alt="{alt(stem, lang)}" loading="lazy" decoding="async">'
             f'</button>{cap}</figure>')
 
 def build(lang):
@@ -371,7 +426,8 @@ def build(lang):
         for i, s in enumerate(HERO))
     strip = "\n        ".join(
         f'<figure><a href="{album_page(k)}" aria-label="{album_name(k, lang)}">'
-        f'<div class="ph r45"><img src="@@assets/img/md/{s}.jpg" alt="{alt(s, lang)}" loading="lazy" decoding="async"></div>'
+        f'<div class="ph r45"><img src="@@assets/img/md/{s}.jpg" srcset="{srcset_for(s)}" '
+        f'sizes="{STRIP_SIZES}" alt="{alt(s, lang)}" loading="lazy" decoding="async"></div>'
         f'<figcaption><span>{album_name(k, lang)}</span><span>{len(PHOTOS[k])} {c["photos_count"]}</span></figcaption>'
         f'</a></figure>' for s, k in STRIP)
     specs = "\n            ".join(f'<li><span>{a}</span><span>{b}</span></li>' for a, b in c["spec"])
@@ -450,7 +506,7 @@ def build(lang):
 
   <section class="section">
     <div class="wrap split">
-      <div class="reveal"><div class="ph r45"><img src="@@assets/img/md/hiroki.jpg" alt="Hiroki" loading="lazy" decoding="async"></div></div>
+      <div class="reveal"><div class="ph r45"><img src="@@assets/img/md/hiroki.jpg" srcset="{srcset_for("hiroki")}" sizes="(min-width:880px) 48vw, 92vw" alt="Hiroki" loading="lazy" decoding="async"></div></div>
       <div class="reveal">
         <p class="eyebrow">{c["s3_eyebrow"]}</p>
         <h2 class="h-lg" style="margin-top:.7em">{c["s3_h"]}</h2>
@@ -573,7 +629,7 @@ def build(lang):
         <h1 class="h-xl" style="margin-top:.5em">{c["about_h1"]}</h1>
         <p class="lede dim" style="margin-top:1.2em;max-width:34ch">{c["about_lede"]}</p>
       </div>
-      <div class="ph r45"><img src="@@assets/img/lg/hiroki.jpg" alt="Hiroki" decoding="async"></div>
+      <div class="ph r45"><img src="@@assets/img/lg/hiroki.jpg" srcset="{srcset_for("hiroki")}" sizes="(min-width:880px) 45vw, 92vw" alt="Hiroki" decoding="async"></div>
     </div>
   </section>
 
@@ -588,8 +644,8 @@ def build(lang):
 
   <section class="section">
     <div class="wrap grid g2">
-      <div class="ph r32 reveal"><img src="@@assets/img/md/da-39.jpg" alt="{alt("da-39", lang)}" loading="lazy" decoding="async"></div>
-      <div class="ph r32 reveal offset"><img src="@@assets/img/md/nm-30.jpg" alt="{alt("nm-30", lang)}" loading="lazy" decoding="async"></div>
+      <div class="ph r32 reveal"><img src="@@assets/img/md/da-39.jpg" srcset="{srcset_for("da-39")}" sizes="(min-width:720px) 47vw, 92vw" alt="{alt("da-39", lang)}" loading="lazy" decoding="async"></div>
+      <div class="ph r32 reveal offset"><img src="@@assets/img/md/nm-30.jpg" srcset="{srcset_for("nm-30")}" sizes="(min-width:720px) 47vw, 92vw" alt="{alt("nm-30", lang)}" loading="lazy" decoding="async"></div>
     </div>
   </section>
 

@@ -78,6 +78,22 @@ lightbox only ever pages through the wedding that was clicked.
 
 Photographs are resized and have all EXIF metadata, including GPS, stripped.
 
+## Image sharpness
+
+Photographs are exported at two sizes (`md` 900px long edge, `lg` 1600px) and the
+pages carry a `srcset`, so the browser downloads whichever actually fits the slot
+it is painting into. On a retina screen a three-column gallery needs roughly
+700 real pixels per tile; `md` alone was 600 and looked soft.
+
+`build.py` reads each file's true width out of the JPEG header (`img_size`)
+rather than assuming, because the same "900px" export is 900 wide for a
+landscape photo and 600 for a portrait one.
+
+**Still outstanding:** the full-bleed images — the home hero and the closing
+bands — have no `srcset` and are served at `lg`. On a 1440px desktop that is a
+2.7x upscale and visibly soft. Fixing it needs new exports cut from the
+originals on the external drive, at roughly 2560px on the long edge.
+
 ## The contact form
 
 The form posts to **Web3Forms**, which emails the enquiry to `sebasuta@gmail.com`.
