@@ -458,13 +458,4 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:400;margin:0;text-wrap:balanc
 .foot-legal{text-decoration:none;border-bottom:1px solid var(--line)}
 .foot-legal:hover{border-bottom-color:var(--amber);color:var(--bone)}
 
-/* ---------- keep large galleries off the GPU until they are needed ----------
-   An album can hold 70 photographs. Decoded all at once that is hundreds of
-   megabytes, and browsers respond by quietly re-rasterising some of them at a
-   lower resolution — which is why individual tiles looked blurred while their
-   neighbours stayed sharp. content-visibility lets the browser skip the work
-   for anything off screen. */
-.gallery figure{
-  content-visibility:auto;
-  contain-intrinsic-size:auto 460px;
-}
+/* (content-visibility experiment removed - it did not help) */
