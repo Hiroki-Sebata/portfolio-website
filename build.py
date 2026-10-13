@@ -93,9 +93,9 @@ FOCUS_DEFAULT = "50% 20%"
 FOCUS = {
     "ja-48": "50% 8%",    # extreme close-up; pull right up so the eyes stay in
     "nm-39": "50% 20%",   # both heads in the upper third
-    "na-5":  "50% 18%",
+    "na-5":  "50% 50%",   # wide crop already centred on their faces
     "da-33": "50% 28%",   # bouquet and veil are the subject, not a face
-    "ja-59": "50% 42%",   # couple stand below a lot of sky
+    "ja-59": "50% 50%",   # dedicated 3.5:1 band slice, centred on their faces
     "nm-11": "50% 38%",
     "da-3":  "50% 50%",   # flat-lay of shoes, nothing to cut off
     "na-10": "55% 45%",   # candlelit couple sit centre-right
