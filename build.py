@@ -383,7 +383,10 @@ def cta_band(lang, page, base):
     c = COPY[lang]
     stem = CTA_IMG.get(page, "nm-11")
     return f"""  <section class="cta-band">
-    <img src="{base}assets/img/lg/{stem}.jpg" alt="" loading="lazy" decoding="async" style="object-position:{focus(stem)}">
+    <picture>
+      <source media="(min-width:900px)" srcset="{base}assets/img/xl/{stem}.jpg">
+      <img src="{base}assets/img/lg/{stem}.jpg" alt="" loading="lazy" decoding="async" style="object-position:{focus(stem)}">
+    </picture>
     <div class="wrap">
       <h2 class="h-lg" style="max-width:26ch;margin-inline:auto">{c["cta_h"]}</h2>
       <a class="btn btn-solid btn-lg" href="contact.html" style="margin-top:2.2em">{c["cta_btn"]}</a>
@@ -400,8 +403,12 @@ def write(lang, page, title, desc, body):
 
 # ================================================================= pages
 # column count by width: 1 under 620, 2 under 1040, 3 under 1400, then 4
-GALLERY_SIZES = ("(min-width:1400px) 23vw, (min-width:1040px) 31vw, "
-                 "(min-width:620px) 47vw, 92vw")
+# Measured, not guessed: the container caps at 1320px with a 72px gutter, so a
+# four-column tile is ~285px, not 23vw. Overstating this makes the browser fetch
+# the 1600px file for a 285px slot, and 70 of those on one album page is enough
+# decoded bitmap that the browser starts re-rasterising tiles at low resolution.
+GALLERY_SIZES = ("(min-width:1400px) 285px, (min-width:1040px) 29vw, "
+                 "(min-width:620px) 44vw, 90vw")
 STRIP_SIZES = "(min-width:460px) 340px, 74vw"
 
 
@@ -419,10 +426,16 @@ def build(lang):
     c = COPY[lang]
 
     # ---------------------------------------------------------------- home
+    # A portrait photograph stretched across a wide screen is a 2.7x upscale and
+    # looks soft, so wide screens get a 2560px landscape crop cut at the same
+    # focal point. Phones keep the portrait frame, which fits a tall screen.
     hero_imgs = "\n        ".join(
+        '<picture>'
+        f'<source media="(min-width:900px)" srcset="@@assets/img/xl/{s}.jpg">'
         f'<img src="@@assets/img/lg/{s}.jpg" alt="{alt(s, lang)}"'
         + ('' if i == 0 else ' loading="lazy"')
         + f' decoding="async" style="object-position:{focus(s)}">'
+        '</picture>'
         for i, s in enumerate(HERO))
     strip = "\n        ".join(
         f'<figure><a href="{album_page(k)}" aria-label="{album_name(k, lang)}">'

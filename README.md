@@ -80,19 +80,29 @@ Photographs are resized and have all EXIF metadata, including GPS, stripped.
 
 ## Image sharpness
 
-Photographs are exported at two sizes (`md` 900px long edge, `lg` 1600px) and the
-pages carry a `srcset`, so the browser downloads whichever actually fits the slot
-it is painting into. On a retina screen a three-column gallery needs roughly
-700 real pixels per tile; `md` alone was 600 and looked soft.
+Three renditions per photograph:
 
-`build.py` reads each file's true width out of the JPEG header (`img_size`)
-rather than assuming, because the same "900px" export is 900 wide for a
-landscape photo and 600 for a portrait one.
+| folder | long edge | used for |
+|---|---|---|
+| `md` | 900px | gallery and album tiles |
+| `lg` | 1600px | lightbox, phone hero, larger slots |
+| `xl` | 2560x1440 | the home hero and the closing bands, on screens 900px and wider |
 
-**Still outstanding:** the full-bleed images — the home hero and the closing
-bands — have no `srcset` and are served at `lg`. On a 1440px desktop that is a
-2.7x upscale and visibly soft. Fixing it needs new exports cut from the
-originals on the external drive, at roughly 2560px on the long edge.
+`xl` files are **landscape crops** cut at the same focal point as `FOCUS` in
+`build.py`. A portrait photograph stretched across a 1440px desktop was a 2.7x
+upscale; the wide crop brings it to 1.08x. Phones still get the portrait frame
+through `<picture>`, because a landscape crop on a tall screen loses the
+composition.
+
+To regenerate them you need the originals on the external drive; the ffmpeg
+recipe is in the commit that added the folder.
+
+**Watch the `sizes` attribute.** It must describe the real slot. Overstating it
+makes the browser fetch `lg` for a 285px tile, and 70 of those on one album page
+is around 400MB of decoded bitmap — at which point browsers quietly re-rasterise
+some tiles at low resolution, which looks exactly like a few photographs being
+blurred while their neighbours are sharp. Accurate `sizes` plus
+`content-visibility: auto` on gallery figures keeps it near 128MB.
 
 ## The contact form
 
