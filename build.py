@@ -24,7 +24,7 @@ IG_HANDLE = "@hiroki_filmuje"
 # two competing results. Add any directory listing you control.
 SAME_AS = [
     INSTAGRAM,
-    # "https://www.weselezklasa.pl/...",   <- paste your profile URL here
+    "https://www.weselezklasa.pl/ogloszenia-weselne/hiroki-filmuje,59198/",
 ]
 DOMAIN = "hiroki-filmuje.pl"
 # Web3Forms delivers the enquiry form to EMAIL. This key is meant to be public:
