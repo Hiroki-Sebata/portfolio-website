@@ -19,6 +19,13 @@ PHONE_DISPLAY = "+48 516 849 121"
 PHONE_RAW = "+48516849121"
 INSTAGRAM = "https://www.instagram.com/hiroki_filmuje/"
 IG_HANDLE = "@hiroki_filmuje"
+# Every other page that is unmistakably this business. Google uses these to
+# decide that the Instagram profile and this domain are one entity rather than
+# two competing results. Add any directory listing you control.
+SAME_AS = [
+    INSTAGRAM,
+    # "https://www.weselezklasa.pl/...",   <- paste your profile URL here
+]
 DOMAIN = "hiroki-filmuje.pl"
 # Web3Forms delivers the enquiry form to EMAIL. This key is meant to be public:
 # it sits in the page source, like every Web3Forms key. Rotate it at web3forms.com
@@ -189,7 +196,81 @@ PACKS = [
 ]
 
 # ================================================================= chrome
+def page_url(lang, page):
+    """The one canonical address for a page."""
+    base = "https://%s/" % DOMAIN
+    if lang == "pl":
+        base += "pl/"
+    return base if page == "index" else base + page + ".html"
+
+
+def seo_head(lang, page, title, desc):
+    """Canonical, language alternates, social cards and structured data.
+
+    The structured data matters more than anything else here: sameAs is what
+    tells Google the Instagram profile and this domain are the same business,
+    which is how a site stops competing with its own social profiles.
+    """
+    url_self = page_url(lang, page)
+    url_en = page_url("en", page)
+    url_pl = page_url("pl", page)
+    og_locale = "pl_PL" if lang == "pl" else "en_GB"
+    bits = [
+        '<link rel="canonical" href="%s">' % url_self,
+        '<link rel="alternate" hreflang="en" href="%s">' % url_en,
+        '<link rel="alternate" hreflang="pl" href="%s">' % url_pl,
+        '<link rel="alternate" hreflang="x-default" href="%s">' % url_en,
+        '<meta property="og:url" content="%s">' % url_self,
+        '<meta property="og:site_name" content="%s">' % BRAND,
+        '<meta property="og:locale" content="%s">' % og_locale,
+        '<meta name="twitter:card" content="summary_large_image">',
+    ]
+
+    business = {
+        "@type": "ProfessionalService",
+        "@id": "https://%s/#business" % DOMAIN,
+        "name": BRAND,
+        "alternateName": "Hiroki Sebata",
+        "url": "https://%s/" % DOMAIN,
+        "image": "https://%s/assets/img/xl/%s.jpg" % (DOMAIN, HERO[0]),
+        "email": EMAIL,
+        "telephone": PHONE_RAW,
+        "priceRange": "3000–4000 PLN",
+        "currenciesAccepted": "PLN",
+        "paymentAccepted": "Cash",
+        "areaServed": {"@type": "Country", "name": "Poland"},
+        "knowsLanguage": ["pl", "en"],
+        "sameAs": SAME_AS,
+        "description": ("Filmy i fotografia ślubna. Pracuję solo — od pierwszego kadru "
+                        "do gotowego filmu." if lang == "pl" else
+                        "Wedding films and photography. I work solo — from the first "
+                        "frame to the finished film."),
+    }
+    graph = [business, {
+        "@type": "WebSite",
+        "@id": "https://%s/#website" % DOMAIN,
+        "url": "https://%s/" % DOMAIN,
+        "name": BRAND,
+        "inLanguage": "pl-PL" if lang == "pl" else "en-GB",
+        "publisher": {"@id": "https://%s/#business" % DOMAIN},
+    }, {
+        "@type": "WebPage",
+        "@id": url_self + "#webpage",
+        "url": url_self,
+        "name": title,
+        "description": desc,
+        "inLanguage": "pl-PL" if lang == "pl" else "en-GB",
+        "isPartOf": {"@id": "https://%s/#website" % DOMAIN},
+        "about": {"@id": "https://%s/#business" % DOMAIN},
+    }]
+    ld = {"@context": "https://schema.org", "@graph": graph}
+    bits.append('<script type="application/ld+json">%s</script>'
+                % json.dumps(ld, ensure_ascii=False, separators=(",", ":")))
+    return "\n".join(bits)
+
+
 def head(lang, page, title, desc, base):
+    seo = seo_head(lang, page, title, desc)
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -207,6 +288,7 @@ def head(lang, page, title, desc, base):
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap">
 <link rel="stylesheet" href="{base}assets/css/site.css">
+{seo}
 </head>
 <body data-page="{page}">"""
 
@@ -879,17 +961,31 @@ def build_privacy(lang):
 
 
 def sitemap():
-    urls = []
+    """Every page, in both languages, each declaring its counterpart.
+
+    Without the hreflang pairs Google treats the Polish and English versions as
+    rivals for the same queries instead of as one site in two languages."""
+    import datetime
+    today = datetime.date.today().isoformat()
+    slugs = PAGES + ["privacy"] + ["album-" + s for _, s, *_ in ALBUMS]
+    entries = []
     for lang in ("en", "pl"):
-        prefix = f"https://{DOMAIN}/" + ("" if lang == "en" else "pl/")
-        for p in PAGES + ["privacy"]:
-            urls.append(prefix + p + ".html")
-        for key, slug, *_ in ALBUMS:
-            urls.append(prefix + "album-" + slug + ".html")
-    body = "\n".join(f"  <url><loc>{u}</loc></url>" for u in urls)
+        for slug in slugs:
+            loc = page_url(lang, slug)
+            alts = "".join(
+                '\n    <xhtml:link rel="alternate" hreflang="%s" href="%s"/>' % (lg, page_url(lg, slug))
+                for lg in ("en", "pl"))
+            alts += ('\n    <xhtml:link rel="alternate" hreflang="x-default" href="%s"/>'
+                     % page_url("en", slug))
+            prio = "1.0" if slug == "index" else ("0.8" if slug in PAGES else "0.6")
+            entries.append(
+                "  <url>\n    <loc>%s</loc>%s\n    <lastmod>%s</lastmod>"
+                "\n    <priority>%s</priority>\n  </url>" % (loc, alts, today, prio))
     open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write(
-        f'<?xml version="1.0" encoding="UTF-8"?>\n'
-        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{body}\n</urlset>\n')
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n'
+        '        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+        + "\n".join(entries) + "\n</urlset>\n")
     open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8").write(
         f"User-agent: *\nAllow: /\nSitemap: https://{DOMAIN}/sitemap.xml\n")
     # GitHub's Pages settings screen rewrites this file without a trailing

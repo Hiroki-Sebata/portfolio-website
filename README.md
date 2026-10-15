@@ -124,6 +124,26 @@ still works; the visitor just lands on Web3Forms' own confirmation page.
 Note: Web3Forms refuses submissions sent from a server (curl and the like) on the
 free plan. Test it from a browser.
 
+## Search (SEO)
+
+`seo_head()` in `build.py` writes, on every page in both languages:
+
+- a **canonical** URL, so `/` and `/index.html` are not treated as duplicates
+- **hreflang** pairs linking the English and Polish version of the same page,
+  plus `x-default`, so the two languages stop competing with each other
+- Open Graph and Twitter card tags
+- **JSON-LD** describing the business: name, email, phone, price range, area
+  served, languages, and `sameAs`
+
+`SAME_AS` near the top of `build.py` is the important one. It lists every other
+page that is unmistakably this business. Google uses it to decide that the
+Instagram profile and this domain are one entity rather than two rival results,
+which is what stops a site being outranked by its own social profile. **Add the
+weselezklasa.pl profile URL there**, and any other directory listing.
+
+`sitemap.xml` lists all 24 pages with their language alternates and is declared
+in `robots.txt`.
+
 ## Meta Pixel (Facebook / Instagram ads)
 
 Two settings at the top of `build.py`:

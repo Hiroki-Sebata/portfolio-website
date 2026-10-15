@@ -1,27 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://hiroki-filmuje.pl/index.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/work.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/about.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/offer.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/contact.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/privacy.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-nadia-miguel.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-nastyja-anton.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-dominika-artur.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-julia-dominik.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-julia-artsiom.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/album-agata-igor.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/index.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/work.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/about.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/offer.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/contact.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/privacy.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-nadia-miguel.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-nastyja-anton.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-dominika-artur.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-julia-dominik.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-julia-artsiom.html</loc></url>
-  <url><loc>https://hiroki-filmuje.pl/pl/album-agata-igor.html</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://hiroki-filmuje.pl/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/work.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/work.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/work.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/work.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/about.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/about.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/offer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/offer.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/offer.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/offer.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/contact.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/privacy.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-nadia-miguel.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-nadia-miguel.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-nadia-miguel.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-nadia-miguel.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-nastyja-anton.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-nastyja-anton.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-nastyja-anton.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-nastyja-anton.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-dominika-artur.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-dominika-artur.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-dominika-artur.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-dominika-artur.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-julia-dominik.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-julia-dominik.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-julia-dominik.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-julia-dominik.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-julia-artsiom.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-julia-artsiom.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-julia-artsiom.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-julia-artsiom.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/album-agata-igor.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-agata-igor.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-agata-igor.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-agata-igor.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/work.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/work.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/work.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/work.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/about.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/about.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/about.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/offer.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/offer.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/offer.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/offer.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/contact.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/privacy.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-nadia-miguel.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-nadia-miguel.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-nadia-miguel.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-nadia-miguel.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-nastyja-anton.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-nastyja-anton.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-nastyja-anton.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-nastyja-anton.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-dominika-artur.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-dominika-artur.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-dominika-artur.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-dominika-artur.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-julia-dominik.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-julia-dominik.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-julia-dominik.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-julia-dominik.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-julia-artsiom.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-julia-artsiom.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-julia-artsiom.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-julia-artsiom.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hiroki-filmuje.pl/pl/album-agata-igor.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hiroki-filmuje.pl/album-agata-igor.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://hiroki-filmuje.pl/pl/album-agata-igor.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://hiroki-filmuje.pl/album-agata-igor.html"/>
+    <lastmod>2026-10-15</lastmod>
+    <priority>0.6</priority>
+  </url>
 </urlset>
