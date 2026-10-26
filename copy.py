@@ -92,7 +92,7 @@ COPY = {
   "offer_close": "Happy to send more examples of my work or answer anything that is not covered here.",
 
   "contact_title": "Contact — Hiroki Filmuje",
-  "contact_desc": "Enquire about your wedding date. Email sebasuta@gmail.com or +48 516 849 121.",
+  "contact_desc": "Enquire about your wedding date. Email hiroki-filmuje@proton.me or +48 516 849 121.",
   "contact_h1": "Let's talk",
   "contact_lede": "The date and the place are enough to start. Everything else we can work out on a call.",
   "contact_rail1": "Enquire", "contact_rail2": "Usually a reply within 2 days",
@@ -208,7 +208,7 @@ COPY = {
   "offer_close": "Chętnie prześlę przykłady mojej pracy lub odpowiem na dodatkowe pytania.",
 
   "contact_title": "Kontakt — Hiroki Filmuje",
-  "contact_desc": "Zapytaj o termin. E-mail sebasuta@gmail.com lub +48 516 849 121.",
+  "contact_desc": "Zapytaj o termin. E-mail hiroki-filmuje@proton.me lub +48 516 849 121.",
   "contact_h1": "Napiszcie do mnie",
   "contact_lede": "Termin i miejsce w zupełności wystarczą na początek. Resztę ustalimy na rozmowie.",
   "contact_rail1": "Kontakt", "contact_rail2": "Odpowiadam zwykle w 2 dni",

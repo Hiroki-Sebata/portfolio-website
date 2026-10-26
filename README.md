@@ -106,7 +106,11 @@ blurred while their neighbours are sharp. Accurate `sizes` plus
 
 ## The contact form
 
-The form posts to **Web3Forms**, which emails the enquiry to `sebasuta@gmail.com`.
+The form posts to **Web3Forms**, which emails the enquiry on.
+
+**The delivery address is set in your Web3Forms account, not here.** Changing
+`EMAIL` in `build.py` only changes what the site displays. If the two disagree,
+visitors write to one address and the form delivers to the other.
 No server of our own is involved, which is what makes it work on GitHub Pages.
 
 The access key lives in `build.py` as `WEB3FORMS_KEY` and is written into both

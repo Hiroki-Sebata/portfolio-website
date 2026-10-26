@@ -14,7 +14,7 @@ SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(SRC_DIR, "docs")
 
 BRAND = "Hiroki Filmuje"
-EMAIL = "sebasuta@gmail.com"
+EMAIL = "hiroki-filmuje@proton.me"
 PHONE_DISPLAY = "+48 516 849 121"
 PHONE_RAW = "+48516849121"
 INSTAGRAM = "https://www.instagram.com/hiroki_filmuje/"

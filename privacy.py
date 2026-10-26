@@ -18,7 +18,7 @@ PRIVACY = {
     "Hiroki Sebata, trading as Hiroki Filmuje, is the controller of any personal "
     "data this site collects.",
     ("list", [
-      "Email — sebasuta@gmail.com",
+      "Email — hiroki-filmuje@proton.me",
       "Phone — +48 516 849 121",
       "Address — [add your business address]",
     ]),
@@ -59,7 +59,8 @@ PRIVACY = {
       "your browser asks Google for them and Google sees your IP address.",
       "<strong>GitHub</strong> — hosts the site.",
       "<strong>Meta</strong> — only if you accepted the cookie notice.",
-      "<strong>Google</strong> — my email is Gmail, so your enquiry arrives there.",
+      "<strong>Proton Mail</strong> — my inbox, based in Switzerland, where your "
+      "enquiry lands and stays.",
     ]),
     "Meta is based in the United States. Accepting the notice means your data may "
     "be handled outside the European Economic Area under the European "
@@ -114,7 +115,7 @@ PRIVACY = {
     "Administratorem danych osobowych zbieranych przez tę stronę jest Hiroki "
     "Sebata, prowadzący działalność pod nazwą Hiroki Filmuje.",
     ("list", [
-      "E-mail — sebasuta@gmail.com",
+      "E-mail — hiroki-filmuje@proton.me",
       "Telefon — +48 516 849 121",
       "Adres — [uzupełnij adres działalności]",
     ]),
@@ -156,7 +157,8 @@ PRIVACY = {
       "Wasza przeglądarka pobiera je z serwerów Google, a Google widzi Wasz adres IP.",
       "<strong>GitHub</strong> — hostuje stronę.",
       "<strong>Meta</strong> — tylko jeśli zaakceptowaliście informację o cookie.",
-      "<strong>Google</strong> — moja poczta to Gmail, więc tam trafia zapytanie.",
+      "<strong>Proton Mail</strong> — moja skrzynka pocztowa z siedzibą w Szwajcarii, "
+      "gdzie trafia i zostaje Wasze zapytanie.",
     ]),
     "Meta ma siedzibę w Stanach Zjednoczonych. Akceptacja oznacza, że Wasze dane "
     "mogą być przetwarzane poza Europejskim Obszarem Gospodarczym, na podstawie "
